@@ -38,4 +38,4 @@ If your application will build models, you will need to include the *SIMCAQM.h* 
 
 ## Help Files
 
-Please, refer to the Help Files available from [Sartorius](https://www.sartorius.com/download/961736/simca-q-17-0-1-help-files-en-b-00260-sartorius-zip-data.zip) for a complete list of the classes and methods available from the headers listed above.
+Please, refer to the [Help Files](https://www.sartorius.com/download/961736/simca-q-17-0-1-help-files-en-b-00260-sartorius-zip-data.zip) available from [Sartorius SIMCA-Q web](https://www.sartorius.com/en/products/oem/oem-data-analytics/simca-q) for a complete list of the classes and methods available from the headers listed above.
