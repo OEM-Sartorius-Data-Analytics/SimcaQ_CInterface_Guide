@@ -3,3 +3,4 @@
 - [Getting started with the SIMCA-Q C interface](00_GettingStarted_Includes/00_GettingStarted_Includes.md).
 - [A simple SIMCA-Q script: Check your license](01_LicenseCheck/LicenseCheck.md).
 - [Handling SIMCA projects](02_HandlingProjects/HandlingProjects.md).
+- [The ModelInfo structure: Obtaining information about models withouth loading them](03_ModelInfoIntroduction/ModelInfo_Introduction.md).

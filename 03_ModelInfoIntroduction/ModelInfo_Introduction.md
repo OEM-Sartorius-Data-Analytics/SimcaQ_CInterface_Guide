@@ -1,0 +1,1 @@
+# The ModelInfo structure: Obtaining information about models withouth loading them
