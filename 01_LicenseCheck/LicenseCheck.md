@@ -20,6 +20,70 @@ else
   }
 ```
 
+In case that a license file was found we can check its validity by e.g.:
+
+```
+if (bValid == SQ_False)
+  {
+    std::cout<<"You have an invalid license"<<std::endl;	 
+  }
+else
+  {
+    std::cout<<"You have a valid license,"<<std::endl;
+    // Code that provides further information on the license ...
+  }
+```
+
+If the license file was valid, SIMCA-Q offers functions to provide different information on the license. For instance, we can obtain the expire date of the license by using the *SQ_GetLicenseFileExpireDate()*, which takes as an input a pointer to an array and the size of the array:
+```
+char szBuffer[256];
+eError = SQ_GetLicenseFileExpireDate(szBuffer,sizeof(szBuffer));
+if (eError != SQ_E_OK)
+  {
+    SQ_GetErrorDescription(eError, szError, sizeof(szError));
+    std::cout << szError << std::endl;
+    return 0;
+  }
+ else
+  {
+    std::cout << "which will expire on " << szBuffer << std::endl;
+  }
+	 
+```
+
+We can also find out the type of license we have by using the *SQ_GetLicenseFileProduct()* function, which takes as an input parameter a reference to a SIMCA-Q enumeration type *SQ_Product*:
+```
+SQ_Product sqProduct; // SIMCA-Q enumeration for determining type.
+eError = SQ_GetLicenseFileProduct(&sqProduct);
+if (eError != SQ_E_OK)
+  {
+    SQ_GetErrorDescription(eError, szError, sizeof(szError));
+    std::cout << szError << std::endl;
+    return 0;
+  }
+else
+  {
+    switch(sqProduct)
+      {
+      case 0:
+        std::cout << "Yout license is of type SQP." << std::endl;
+        break;
+      case 1:
+        std::cout << "Yout license is of type SQPPlus." << std::endl;
+        break;
+      case 2:
+        std::cout << "Yout license is of type SQM." << std::endl;
+        break;
+      case 3:
+        std::cout << "Yout license is of type SQAll." << std::endl;
+        break;
+      default:
+        std::cout << "An unknown error occurred when determining your type of license." << std::endl;
+      }
+  }	 
+```
+
+The final code would look as follows:
 ```
 #include <iostream>
 #include "SIMCAQP.h"
@@ -31,7 +95,7 @@ int main()
   SQ_ErrorCode eError; // handler for SIMCA-Q errors
   char szError[256]; // C-string for handling SIMCA-Q error descriptions
 
-  // Determine license validity
+  // Determine the existence of a valid license file
   eError = SQ_IsLicenseFileValid(&bValid);
 
   if (eError != SQ_E_OK)
@@ -41,7 +105,8 @@ int main()
    }
   else
     {
-      if (!bValid)
+      //Check whether the license file is still valid
+      if (bValid == SQ_False)
        {
          std::cout<<"You have an invalid license"<<std::endl;	 
        }
@@ -49,6 +114,7 @@ int main()
        {
          std::cout<<"You have a valid license,"<<std::endl;
 	 
+	 // Find out and print the expire date for the license
 	 char szBuffer[256];
 	 eError = SQ_GetLicenseFileExpireDate(szBuffer,sizeof(szBuffer));
 	 if (eError != SQ_E_OK)
@@ -63,8 +129,9 @@ int main()
 	   }
 	     
 
+	 // Find out and print the type of license
 	 SQ_Product sqProduct; // SIMCA-Q enumeration for determining type.
-	 eError = SQ_GetLicenseFileProduct (&sqProduct);
+	 eError = SQ_GetLicenseFileProduct(&sqProduct);
 	 if (eError != SQ_E_OK)
 	   {
 	     SQ_GetErrorDescription(eError, szError, sizeof(szError));

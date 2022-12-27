@@ -8,7 +8,7 @@ int main()
   SQ_ErrorCode eError; // handler for SIMCA-Q errors
   char szError[256]; // C-string for handling SIMCA-Q error descriptions
 
-  // Determine license validity
+  // Determine the existence of a valid license file
   eError = SQ_IsLicenseFileValid(&bValid);
 
   if (eError != SQ_E_OK)
@@ -18,7 +18,8 @@ int main()
    }
   else
     {
-      if (!bValid)
+      //Check whether the license file is still valid
+      if (bValid == SQ_False)
        {
          std::cout<<"You have an invalid license"<<std::endl;	 
        }
@@ -26,6 +27,7 @@ int main()
        {
          std::cout<<"You have a valid license,"<<std::endl;
 	 
+	 // Find out and print the expire date for the license
 	 char szBuffer[256];
 	 eError = SQ_GetLicenseFileExpireDate(szBuffer,sizeof(szBuffer));
 	 if (eError != SQ_E_OK)
@@ -40,8 +42,9 @@ int main()
 	   }
 	     
 
+	 // Find out and print the type of license
 	 SQ_Product sqProduct; // SIMCA-Q enumeration for determining type.
-	 eError = SQ_GetLicenseFileProduct (&sqProduct);
+	 eError = SQ_GetLicenseFileProduct(&sqProduct);
 	 if (eError != SQ_E_OK)
 	   {
 	     SQ_GetErrorDescription(eError, szError, sizeof(szError));
