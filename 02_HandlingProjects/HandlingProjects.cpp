@@ -16,7 +16,7 @@ int main(int argc,char* argv[])
       return -1;
     }
   
-  // Initiate a reference to a structure for handling SIMCA projects
+  // Initiate a structure pointer for handling SIMCA projects
   SQ_Project hProject = NULL;
 
   SQ_ErrorCode eError; // handler for SIMCA-Q erros
@@ -33,7 +33,7 @@ int main(int argc,char* argv[])
 
   // Find out and print the name of the project
   char projectName [256];
-  eError = SQ_GetProjectName (hProject, projectName, sizeof(projectName));
+  eError = SQ_GetProjectName(hProject, projectName, sizeof(projectName));
   std::cout<<"The name of the project is: "<<projectName<<"."<<std::endl;
 
   // Find out and print the number of models in the project
