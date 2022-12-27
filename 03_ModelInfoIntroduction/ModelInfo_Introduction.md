@@ -1,1 +1,55 @@
 # The ModelInfo structure: Obtaining information about models withouth loading them
+
+Below you can find an [example](ModelInfo_Introduction.cpp) where all this commands are combined into a script that accepts as an input parameter the relative path to a SIMCA file and prints some properties of the model with index number 1:
+```
+#include <iostream>
+#include "SIMCAQP.h"
+
+int main(int argc,char* argv[])
+{
+  // Check that only one input argument was passed when calling the script
+  // i.e., the name of the SIMCA project/file to be opened. Otherwise stop the program
+  if(argc==1)
+    {
+      std::cout<<"\nYou need to pass a SIMCA file as an argument\n";
+      return -1;
+    }
+  else if(argc>2)
+    {
+      std::cout<<"\nToo many arguments\n";
+      return -1;
+    }
+  
+  // Initiate a structure pointer for handling SIMCA projects
+  SQ_Project hProject = NULL;
+
+  SQ_ErrorCode eError; // handler for SIMCA-Q errors
+  const char * szUSPFile = argv[1];
+  const char * szPassword = NULL;
+  eError = SQ_OpenProject(szUSPFile, szPassword, &hProject);
+  char szError[256]; // C-string for handling SIMCA-Q error descriptions
+  if (eError != SQ_E_OK)
+    {            
+      SQ_GetErrorDescription(eError, szError, sizeof(szError));
+      std::cout << szError << std::endl;
+      return -1;
+    }
+
+  int iModelIndex = 1;
+  int iModelNumber = -1;  
+
+  eError = SQ_GetModelNumberFromIndex(hProject, iModelIndex, &iModelNumber);
+
+  SQ_ModelInfo oModelInfo;
+
+  SQ_GetModelInfo(hProject, iModelNumber, &oModelInfo);
+
+  std::cout<<"The name of the model is: "<< oModelInfo.modelName <<","<<std::endl;
+  std::cout<<"and it is of type: "<< oModelInfo.modelTypeName <<"."<<std::endl;
+  std::cout<<"It was built from "<< oModelInfo.numberOfObservations <<" observations."<<std::endl;
+  std::cout<<"including "<< oModelInfo.numberOfXVariables <<" X variables"<<std::endl;
+  std::cout<<"and "<< oModelInfo.numberOfYVariables <<" Y variables"<<std::endl;
+
+  return 0;
+}
+```

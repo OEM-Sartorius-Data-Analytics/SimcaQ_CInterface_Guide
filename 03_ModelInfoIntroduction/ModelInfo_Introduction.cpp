@@ -34,7 +34,7 @@ int main(int argc,char* argv[])
   int iModelIndex = 1;
   int iModelNumber = -1;  
 
-  eError = SQ_GetModelNumberFromIndex(mhProject, iModelIndex, &iModelNumber);
+  eError = SQ_GetModelNumberFromIndex(hProject, iModelIndex, &iModelNumber);
 
   SQ_ModelInfo oModelInfo;
 
