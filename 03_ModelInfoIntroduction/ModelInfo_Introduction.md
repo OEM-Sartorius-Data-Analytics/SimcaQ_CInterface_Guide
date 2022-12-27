@@ -1,5 +1,24 @@
 # The ModelInfo structure: Obtaining information about models withouth loading them
 
+SIMCA-Q offers a C structure, *SQ_ModelInfo* that can be used to retrieve information about a model without actually loading it. This structure can be created using the function *SQ_GetModelInfo()*, which receives as input parameters a pointer to a project structure, the model number and a reference to the actural *SQ_ModelInfo* structure that we want to retrieve. It is not straightforward to know the model number. However, one can get it from the model index. All models withon a SIMCA project/file are associated within indices starting from 1 in the same order as they appear in the SIMCA project/file. Provided that we know the index of the model of interest, we can get the associated model number by calling the function *SQ_GetModelNumberFromIndex()* which receives as input parameters the pointer to the project structure, the model index and a reference to the model number that we want to retrieve. Thus, if e.g., we want to retireve the SQ_ModelInfo structure for the model of a (already loaded as e.g., *hProject*) SIMCA project with index 1, we could do it by:
+```
+int iModelIndex = 1;
+int iModelNumber = -1;  
+SQ_GetModelNumberFromIndex(hProject, iModelIndex, &iModelNumber);
+
+SQ_ModelInfo oModelInfo;
+SQ_GetModelInfo(hProject, iModelNumber, &oModelInfo);
+```
+
+From the *SQ_ModelInfo* structure we could already access plenty of model attributes. The following code is an example that would print the model name, its type, the number of observations used to build it as well as its number of X and Y variables:
+```
+std::cout<<"The name of the model is: "<< oModelInfo.modelName <<","<<std::endl;
+std::cout<<"and it is of type: "<< oModelInfo.modelTypeName <<"."<<std::endl;
+std::cout<<"It was built from "<< oModelInfo.numberOfObservations <<" observations."<<std::endl;
+std::cout<<"including "<< oModelInfo.numberOfXVariables <<" X variables"<<std::endl;
+std::cout<<"and "<< oModelInfo.numberOfYVariables <<" Y variables"<<std::endl;
+```
+
 Below you can find an [example](ModelInfo_Introduction.cpp) where all this commands are combined into a script that accepts as an input parameter the relative path to a SIMCA file and prints some properties of the model with index number 1:
 ```
 #include <iostream>
@@ -35,15 +54,16 @@ int main(int argc,char* argv[])
       return -1;
     }
 
+  // Retrieve model number for the model with index = 1
   int iModelIndex = 1;
   int iModelNumber = -1;  
-
   eError = SQ_GetModelNumberFromIndex(hProject, iModelIndex, &iModelNumber);
 
+  // Retrieve the SQ_ModelInfo structure for the model
   SQ_ModelInfo oModelInfo;
-
   SQ_GetModelInfo(hProject, iModelNumber, &oModelInfo);
 
+  // Print properties of the model
   std::cout<<"The name of the model is: "<< oModelInfo.modelName <<","<<std::endl;
   std::cout<<"and it is of type: "<< oModelInfo.modelTypeName <<"."<<std::endl;
   std::cout<<"It was built from "<< oModelInfo.numberOfObservations <<" observations."<<std::endl;

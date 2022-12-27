@@ -31,15 +31,16 @@ int main(int argc,char* argv[])
       return -1;
     }
 
+  // Retrieve model number for the model with index = 1
   int iModelIndex = 1;
   int iModelNumber = -1;  
-
   eError = SQ_GetModelNumberFromIndex(hProject, iModelIndex, &iModelNumber);
 
+  // Retrieve the SQ_ModelInfo structure for the model
   SQ_ModelInfo oModelInfo;
-
   SQ_GetModelInfo(hProject, iModelNumber, &oModelInfo);
 
+  // Print properties of the model
   std::cout<<"The name of the model is: "<< oModelInfo.modelName <<","<<std::endl;
   std::cout<<"and it is of type: "<< oModelInfo.modelTypeName <<"."<<std::endl;
   std::cout<<"It was built from "<< oModelInfo.numberOfObservations <<" observations."<<std::endl;
