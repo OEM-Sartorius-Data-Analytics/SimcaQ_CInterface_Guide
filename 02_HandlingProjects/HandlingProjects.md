@@ -19,6 +19,17 @@ It is then straightforward to retrieve some information about the project. To re
 char projectName [256];
 SQ_GetProjectName(hProject, projectName, sizeof(projectName));
 ```
+To find out the numbe of models in the SIMCA project we can use the *SQ_GetNumberOfModels()* that takes as input parameters the project pointer and a reference to an interger accounting for the number of models e.g.:
+```
+int iNumModels;
+SQ_GetNumberOfModels(hProject, &iNumModels);
+```
+
+To find out the numbe of datasetss in the SIMCA project we can use the *SQ_GetNumberOfDatasets()* that takes as input parameters the project pointer and a reference to an interger accounting for the number of datasets e.g.:
+```
+int iNumDatasets;  
+SQ_GetNumberOfDatasets(hProject, &iNumDatasets);
+```
 
 Below you can find an [example](HandlingProjects.cpp) where all this commands are combined into a script that accepts as an input parameter the relative path to a SIMCA file and prints the name of the project/file as well as its number of models and datasets:
 ```
@@ -40,7 +51,7 @@ int main(int argc,char* argv[])
       return -1;
     }
   
-  // Initiate a reference to a structure for handling SIMCA projects
+  // Initiate a structure pointer for handling SIMCA projects
   SQ_Project hProject = NULL;
 
   SQ_ErrorCode eError; // handler for SIMCA-Q erros
@@ -57,7 +68,7 @@ int main(int argc,char* argv[])
 
   // Find out and print the name of the project
   char projectName [256];
-  eError = SQ_GetProjectName (hProject, projectName, sizeof(projectName));
+  eError = SQ_GetProjectName(hProject, projectName, sizeof(projectName));
   std::cout<<"The name of the project is: "<<projectName<<"."<<std::endl;
 
   // Find out and print the number of models in the project
