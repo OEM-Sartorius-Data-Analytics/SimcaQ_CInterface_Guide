@@ -1,30 +1,81 @@
-# A script to check the SIMCA-Q license
+# A simple SIMCA-Q script: Check your license
+
+In order to get started we will go through a simple script for checking the validity and charateristics of your SIMCA-Q license. In order for your app to work, you should have a SIMCA-Q license in the same directory as your executable (other options will be discussed later on).
 
 ```
 #include <iostream>
-#include "SQ.h"
+#include "SIMCAQP.h"
+
 
 int main()
 {
-  SQ_Bool bValid;
+  SQ_Bool bValid; // SIMCA-Q enumeration { SQ_False = 0, SQ_True }. Used here for determining license validity.
+  SQ_ErrorCode eError; // handler for SIMCA-Q errors
+  char szError[256]; // C-string for handling SIMCA-Q error descriptions
 
-  if (SQ_IsLicenseFileValid(&bValid) != SQ_E_OK)
+  // Determine license validity
+  eError = SQ_IsLicenseFileValid(&bValid);
+
+  if (eError != SQ_E_OK)
    {
-     std::cout<<"Could not read license"<<std::endl;
+     SQ_GetErrorDescription(eError, szError, sizeof(szError));
+     std::cout << szError << std::endl;
    }
   else
     {
       if (!bValid)
        {
-         std::cout<<"Invalid license"<<std::endl;
+         std::cout<<"You have an invalid license"<<std::endl;	 
        }
       else
        {
-         std::cout<<"Valid license"<<std::endl;
-       }
-    }
-    
+         std::cout<<"You have a valid license,"<<std::endl;
+	 
+	 char szBuffer[256];
+	 eError = SQ_GetLicenseFileExpireDate(szBuffer,sizeof(szBuffer));
+	 if (eError != SQ_E_OK)
+	   {
+	     SQ_GetErrorDescription(eError, szError, sizeof(szError));
+             std::cout << szError << std::endl;
+             return 0;
+	   }
+	 else
+	   {
+	     std::cout << "which will expire on " << szBuffer << std::endl;
+	   }
+	     
+
+	 SQ_Product sqProduct; // SIMCA-Q enumeration for determining type.
+	 eError = SQ_GetLicenseFileProduct (&sqProduct);
+	 if (eError != SQ_E_OK)
+	   {
+	     SQ_GetErrorDescription(eError, szError, sizeof(szError));
+             std::cout << szError << std::endl;
+             return 0;
+	   }
+	 else
+	   {
+	     switch(sqProduct)
+	       {
+	       case 0:
+		 std::cout << "Yout license is of type SQP." << std::endl;
+		 break;
+	       case 1:
+		 std::cout << "Yout license is of type SQPPlus." << std::endl;
+		 break;
+	       case 2:
+		 std::cout << "Yout license is of type SQM." << std::endl;
+		 break;
+	       case 3:
+		 std::cout << "Yout license is of type SQAll." << std::endl;
+		 break;
+	       default:
+		 std::cout << "An unknown error occurred when determining your type of license." << std::endl;
+	       }
+	   }	 
+       }  
+    }  
+
   return 0;
 }
-
 ```
