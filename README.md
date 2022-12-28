@@ -4,4 +4,4 @@
 - [A simple SIMCA-Q script: Check your license](01_LicenseCheck/LicenseCheck.md).
 - [Handling SIMCA projects](02_HandlingProjects/HandlingProjects.md).
 - [The ModelInfo structure: Obtaining information about models withouth loading them](03_ModelInfoIntroduction/ModelInfo_Introduction.md).
-- [Handling models: An introduction](04_HandlingModels_Introduction/HandlingModels_Introduction.md).
+- [Handling models: An introduction](05_HandlingModels_Introduction/HandlingModels_Introduction.md).
