@@ -34,7 +34,7 @@ int main(int argc,char* argv[])
   // Load the model with index = 1
   SQ_Model hModel = NULL;
   int iModelIndex = 1;
-  int iModelNumber = -1;
+  int iModelNumber;
   SQ_Bool bIsFitted;
   eError = SQ_GetModelNumberFromIndex(hProject, iModelIndex, &iModelNumber);
   eError = SQ_GetModel(hProject, iModelNumber, &hModel);
@@ -58,6 +58,10 @@ int main(int argc,char* argv[])
   // Number of components
   eError = SQ_GetNumberOfComponents(hModel, &iNumComponents);
   std::cout<<"The number of components in the model is: "<< iNumComponents <<"."<<std::endl;
+
+  // Close the project
+  eError = SQ_CloseProject(&hProject);
+  hProject = NULL;
 
   return 0;
 }
