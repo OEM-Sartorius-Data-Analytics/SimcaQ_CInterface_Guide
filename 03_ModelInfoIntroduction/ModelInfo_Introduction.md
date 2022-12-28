@@ -1,6 +1,6 @@
 # The ModelInfo structure: Obtaining information about models withouth loading them
 
-SIMCA-Q offers a C structure, *SQ_ModelInfo* that can be used to retrieve information about a model without actually loading it. This structure can be created using the function *SQ_GetModelInfo()*, which receives as input parameters a pointer to a project structure, the model number and a reference to the actural *SQ_ModelInfo* structure that we want to retrieve. It is not straightforward to know the model number. However, one can get it from the model index. All models withon a SIMCA project/file are associated within indices starting from 1 in the same order as they appear in the SIMCA project/file. Provided that we know the index of the model of interest, we can get the associated model number by calling the function *SQ_GetModelNumberFromIndex()* which receives as input parameters the pointer to the project structure, the model index and a reference to the model number that we want to retrieve. Thus, if e.g., we want to retireve the SQ_ModelInfo structure for the model of a (already loaded as e.g., *hProject*) SIMCA project with index 1, we could do it by:
+SIMCA-Q offers a C structure, *tagSQ_ModelInfo*, which can be accessed as well with the typedef-name *SQ_ModelInfo*, which can be used to retrieve information about a model without actually loading it. This structure can be created using the function *SQ_GetModelInfo()*, which receives as input parameters a [SQ_Project pointer](../02_HandlingProjects/HandlingProjects.md), the model number and the address of the actual *SQ_ModelInfo* structure that we want to retrieve (which we would have previously declared). It is not straightforward to know the model number. However, one can get it from the model index. All models withon a SIMCA project/file are associated to indices starting from 1 in the same order as they appear in the SIMCA project/file. Provided that we know the index of the model of interest, we can get the associated model number by calling the function *SQ_GetModelNumberFromIndex()* which receives as input parameters the SQ_Project pointer, the model index and the address of the model number that we want to retrieve. Thus, if e.g., we want to retireve the *tagSQ_ModelInfo* structure for the model with index equal to 1 of a (already loaded as e.g., *hProject*) SIMCA project handler, we could do it by:
 ```
 int iModelIndex = 1;
 int iModelNumber = -1;  
@@ -39,7 +39,7 @@ int main(int argc,char* argv[])
       return -1;
     }
   
-  // Initiate a structure pointer for handling SIMCA projects
+  // Initialize the SQ_Project pointer for handling SIMCA projects
   SQ_Project hProject = NULL;
 
   SQ_ErrorCode eError; // handler for SIMCA-Q errors
@@ -59,7 +59,7 @@ int main(int argc,char* argv[])
   int iModelNumber = -1;  
   eError = SQ_GetModelNumberFromIndex(hProject, iModelIndex, &iModelNumber);
 
-  // Retrieve the SQ_ModelInfo structure for the model
+  // Retrieve the tagSQ_ModelInfo structure for the model
   SQ_ModelInfo oModelInfo;
   SQ_GetModelInfo(hProject, iModelNumber, &oModelInfo);
 

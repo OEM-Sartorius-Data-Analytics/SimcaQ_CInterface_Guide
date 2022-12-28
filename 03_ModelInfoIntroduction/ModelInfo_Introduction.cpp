@@ -16,7 +16,7 @@ int main(int argc,char* argv[])
       return -1;
     }
   
-  // Initiate a structure pointer for handling SIMCA projects
+  // Initialize the SQ_Project pointer for handling SIMCA projects
   SQ_Project hProject = NULL;
 
   SQ_ErrorCode eError; // handler for SIMCA-Q errors
@@ -36,7 +36,7 @@ int main(int argc,char* argv[])
   int iModelNumber = -1;  
   eError = SQ_GetModelNumberFromIndex(hProject, iModelIndex, &iModelNumber);
 
-  // Retrieve the SQ_ModelInfo structure for the model
+  // Retrieve the tagSQ_ModelInfo structure for the model
   SQ_ModelInfo oModelInfo;
   SQ_GetModelInfo(hProject, iModelNumber, &oModelInfo);
 
