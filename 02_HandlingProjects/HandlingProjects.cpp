@@ -16,7 +16,7 @@ int main(int argc,char* argv[])
       return -1;
     }
   
-  // Initiate a structure pointer for handling SIMCA projects
+  // Initialize the SQ_Project pointer for handling SIMCA projects
   SQ_Project hProject = NULL;
 
   SQ_ErrorCode eError; // handler for SIMCA-Q erros

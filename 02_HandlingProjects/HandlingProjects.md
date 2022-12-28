@@ -1,42 +1,43 @@
 # Handling SIMCA projects
 
-A crucial step in almost any SIMCA-Q application will consist in handling SIMCA projects. Examples include opening and saving the project, accessing datasets or models within the project, etc. For this purpose, the C interface of SIMCA-Q offers a C structure to handle SIMCA projects/files as well as several functions, defined in *SQProject.h*, to retrieve information on the project as well as other SIMCA-Q structure references like e.g., SQ_Dataset, SQ_Models, etc.
+A crucial step in almost any SIMCA-Q application will consist in handling SIMCA projects. Examples include opening and saving the project, accessing datasets or models within the project, etc. For this purpose, the C interface of SIMCA-Q offers a C structure to handle SIMCA projects/files, *tagSQ_ProjectHandle*, as well as a typedef-name for pointers to this structure, *SQ_Project*. SIMCA-Q also offers several functions, defined in *SQProject.h*, to retrieve information on the project as well as other SIMCA-Q structures for handling datasets, models, etc.
 
-Explicetely, we would initiate such a structure pointer by:
+Explicetely, we would initiate such a pointer to the *tagSQ_ProjectHandle* structure by:
 ```
 SQ_Project hProject = NULL;
 ```
 
-To open the project we would use the *SQ_OpenProject()* that receives as input parameters the name of the SIMCA project, its password (if any, otherwise pass NULL, and a reference to the project pointer e.g.:
+To open the project we would use the *SQ_OpenProject()* that receives as input parameters the name of the SIMCA project, its password (if any, otherwise pass NULL), and the address of the *SQ_Project* pointer e.g.:
 ```
 const char * szUSPFile = argv[1];
 const char * szPassword = NULL;
 SQ_OpenProject(szUSPFile, szPassword, &hProject);
 ```
 
-It is then straightforward to retrieve some information about the project. To retrieve the project name we can use the *SQ_GetProjectName()* that takes as input parameters the project pointer, a pointer to an array and the size of that array e.g.:
+It is then straightforward to retrieve some information about the project. To retrieve the project name we can use the *SQ_GetProjectName()* that takes as input parameters the SQ_Project pointer, a pointer to a char array and the size of that char array e.g.:
 ```
 char projectName [256];
 SQ_GetProjectName(hProject, projectName, sizeof(projectName));
 ```
-To find out the numbe of models in the SIMCA project we can use the *SQ_GetNumberOfModels()* that takes as input parameters the project pointer and a reference to an interger accounting for the number of models e.g.:
+
+To find out the number of models in the SIMCA project we can use the *SQ_GetNumberOfModels()* that takes as input parameters the SQ_Project pointer and the address of an interger accounting for the number of models e.g.:
 ```
 int iNumModels;
 SQ_GetNumberOfModels(hProject, &iNumModels);
 ```
 
-To find out the numbe of datasetss in the SIMCA project we can use the *SQ_GetNumberOfDatasets()* that takes as input parameters the project pointer and a reference to an interger accounting for the number of datasets e.g.:
+To find out the numbe of datasetss in the SIMCA project we can use the *SQ_GetNumberOfDatasets()* that takes as input parameters the SQ_Project pointer and the address of an interger accounting for the number of datasets e.g.:
 ```
 int iNumDatasets;  
 SQ_GetNumberOfDatasets(hProject, &iNumDatasets);
 ```
 
-In case you would have made changes to the project (not yet in this example) you could use the *SQ_Save()* function that takes as an input parameter a reference to the project pointer:
+In case you would have made changes to the project (not yet in this example) you could use the *SQ_Save()* function that takes as an input parameter the SQ_Project pointer:
 ```
 SQ_Save(hProject);
 ```
 
-When you are done you should close the project and release the project pointer:
+When you are done you should close the project and assign the SQ_Project pointer to NULL:
 ```
 SQ_CloseProject(&hProject);
 hProject = NULL;
@@ -62,7 +63,7 @@ int main(int argc,char* argv[])
       return -1;
     }
   
-  // Initiate a structure pointer for handling SIMCA projects
+  // Initialize the SQ_Project pointer for handling SIMCA projects
   SQ_Project hProject = NULL;
 
   SQ_ErrorCode eError; // handler for SIMCA-Q erros

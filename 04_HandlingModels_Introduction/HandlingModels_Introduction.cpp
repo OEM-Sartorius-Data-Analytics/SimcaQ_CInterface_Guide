@@ -21,11 +21,9 @@ int main(int argc,char* argv[])
 
   // Load the project
   SQ_Project hProject = NULL;
-  SQ_ErrorCode eError; // handler for SIMCA-Q erros
   const char * szUSPFile = argv[1];
   const char * szPassword = NULL;
   eError = SQ_OpenProject(szUSPFile, szPassword, &hProject);
-  char szError[256]; // C-string for handling SIMCA-Q error descriptions
   if (eError != SQ_E_OK)
     {            
       SQ_GetErrorDescription(eError, szError, sizeof(szError));
@@ -38,8 +36,8 @@ int main(int argc,char* argv[])
   int iModelIndex = 1;
   int iModelNumber = -1;
   SQ_Bool bIsFitted;
-  SQ_GetModelNumberFromIndex(hProject, iModelIndex, &iModelNumber);
-  SQ_GetModel(hProject, iModelNumber, &hModel);
+  eError = SQ_GetModelNumberFromIndex(hProject, iModelIndex, &iModelNumber);
+  eError = SQ_GetModel(hProject, iModelNumber, &hModel);
   // Check if model is correct (=fitted) 
   if (SQ_IsModelFitted(hModel, &bIsFitted) != SQ_E_OK || bIsFitted != SQ_True)
     return -1;
@@ -49,14 +47,14 @@ int main(int argc,char* argv[])
   char szBuffer[256];
   int iNumComponents;
 
-  // Model type 
-  eError = SQ_GetModelTypeString(hModel, szBuffer, sizeof(szBuffer));
-  std::cout<<"The model type is: "<< szBuffer <<"."<<std::endl;
-  
   // Model name
   eError = SQ_GetModelName(hModel, szBuffer, sizeof(szBuffer));
   std::cout<<"The name of the model is: "<< szBuffer <<"."<<std::endl;
 
+  // Model type 
+  eError = SQ_GetModelTypeString(hModel, szBuffer, sizeof(szBuffer));
+  std::cout<<"The model type is: "<< szBuffer <<"."<<std::endl;
+  
   // Number of components
   eError = SQ_GetNumberOfComponents(hModel, &iNumComponents);
   std::cout<<"The number of components in the model is: "<< iNumComponents <<"."<<std::endl;
