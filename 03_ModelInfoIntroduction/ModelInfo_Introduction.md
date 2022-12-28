@@ -70,6 +70,10 @@ int main(int argc,char* argv[])
   std::cout<<"including "<< oModelInfo.numberOfXVariables <<" X variables"<<std::endl;
   std::cout<<"and "<< oModelInfo.numberOfYVariables <<" Y variables"<<std::endl;
 
+  // Close the project
+  eError = SQ_CloseProject(&hProject);
+  hProject = NULL;
+
   return 0;
 }
 ```
