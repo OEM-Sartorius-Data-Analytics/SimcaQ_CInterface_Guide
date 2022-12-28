@@ -31,6 +31,17 @@ int iNumDatasets;
 SQ_GetNumberOfDatasets(hProject, &iNumDatasets);
 ```
 
+In case you would have made changes to the project (not yet in this example) you could use the *SQ_Save()* function that takes as an input parameter a reference to the project pointer:
+```
+SQ_Save(hProject);
+```
+
+When you are done you should close the project and release the project pointer:
+```
+SQ_CloseProject(&hProject);
+hProject = NULL;
+```
+
 Below you can find an [example](HandlingProjects.cpp) where all this commands are combined into a script that accepts as an input parameter the relative path to a SIMCA file and prints the name of the project/file as well as its number of models and datasets:
 ```
 #include <iostream>
