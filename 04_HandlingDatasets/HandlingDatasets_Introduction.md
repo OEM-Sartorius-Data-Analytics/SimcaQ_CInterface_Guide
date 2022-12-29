@@ -18,3 +18,5 @@ Once we know the number of the dataset of interest, we can retrieve the correspo
 ```
 SQ_GetDataset (hProject, iDatasetNumber, &hDataset);
 ```
+
+[example](HandlingDatasets_Introduction.cpp)
