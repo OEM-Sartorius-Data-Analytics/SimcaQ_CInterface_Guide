@@ -42,27 +42,24 @@ int main(int argc,char* argv[])
   if (SQ_IsModelFitted(hModel, &bIsFitted) != SQ_E_OK || bIsFitted != SQ_True)
     return -1;
 
+  // Load the handles for the model scores
   SQ_VectorData scoresVectorData=NULL;
-
   SQ_GetT(hModel,NULL,&scoresVectorData);
-
   SQ_FloatMatrix scoresDatamatrix=NULL;
-
   SQ_GetDataMatrix(scoresVectorData, &scoresDatamatrix);
 
+  // Print the model scores
   int nObs, nScores;
-
   SQ_GetNumRowsInFloatMatrix(scoresDatamatrix, &nObs);
   SQ_GetNumColumnsInFloatMatrix(scoresDatamatrix, &nScores);
-  std::cout<<"n rows: "<<nObs<<std::endl;
-  std::cout<<"n cols: "<<nScores<<std::endl;
-
   float value;
-
-  SQ_GetDataFromFloatMatrix(scoresDatamatrix, 1, 1, &value);
-  
-  std::cout<<"The retrieved value is: "<<value<<std::endl;
-
+  for(int iObs=1;iObs<=nObs;iObs++){
+    for(int iScore=1;iScore<=nScores;iScore++){
+      SQ_GetDataFromFloatMatrix(scoresDatamatrix, iObs, iScore, &value);
+      std::cout<<value<<"\t";
+    }
+    std::cout<<"\n";
+  }
 
 
   // Close the project
