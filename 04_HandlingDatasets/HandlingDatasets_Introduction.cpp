@@ -103,7 +103,7 @@ int main(int argc,char* argv[])
   // Retrieve a pointer to a tagSQ_VectorData structure for handling the actual observation
   // values in the dataset
   SQ_VectorData pVectorData;
-  // Using NULL instead of a SQ_intVector in order to retrieve all observations
+  // Using NULL instead of a SQ_IntVector in order to retrieve all observations
   SQ_GetDataSetObservations(hDataset, NULL, &pVectorData);
 
   ////////////////////////

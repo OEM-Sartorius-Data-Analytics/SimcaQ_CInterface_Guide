@@ -85,4 +85,10 @@ int variableNameID = 1;
 SQ_GetVariableName (pVariable, variableNameID, szBuffer, sizeof(szBuffer));
 ```
 
+For accessing the actual Observation values in the dataset, we need first to retrieve a pointer to a *tagSQ_VectorData* structure by using the function *SQ_GetDataSetObservations()*, which takes as input arguments the handle to the Dataset, then either *NULL* if we want to retrieve all observations or a pointer to a *tagSQ_IntVector* structure if we want just specific observations, and the address of the pointer to the *tagSQ_VectorData* structure. For example, if we want to retrieve all observations:
+```
+SQ_VectorData pVectorData;
+SQ_GetDataSetObservations(hDataset, NULL, &pVectorData);
+```
+
 [example](HandlingDatasets_Introduction.cpp)
