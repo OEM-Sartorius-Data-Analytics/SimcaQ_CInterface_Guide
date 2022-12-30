@@ -1,4 +1,4 @@
- #include <iostream>
+#include <iostream>
 #include "SIMCAQP.h"
 
 int main(int argc,char* argv[])
@@ -30,7 +30,6 @@ int main(int argc,char* argv[])
       std::cout << szError << std::endl;
       return -1;
     }
-
   
   // Initialization of the tagSQ_Dataset pointer
   SQ_Dataset hDataset = NULL;
@@ -145,12 +144,11 @@ int main(int argc,char* argv[])
   // Retrieve the value for observation =1 and variable = 1
   SQ_FloatMatrix pMatrix;
   SQ_GetDataMatrix(pVectorData, &pMatrix);
-  int row=1;
-  int col=1;
+  int var=1;
+  int obs=1;
   float val;
-  SQ_GetDataFromFloatMatrix (pMatrix, row, col, &val);
+  SQ_GetDataFromFloatMatrix (pMatrix, var, obs, &val);
   std::cout<<"Val: "<< val <<","<<std::endl;
-
 
   // Close the project
   eError = SQ_CloseProject(&hProject);
