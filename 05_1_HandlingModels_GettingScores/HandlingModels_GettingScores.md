@@ -1,7 +1,10 @@
 # Handling models: Retrieving the scores
 
-- [Summary of Fit Parameters](#Summary)
-- [Scores](#Scores)
+*SQ_Model* handles allow retrieving multiple properties and parameters of the models included in SIMCA project/files. Here we will go through the following examples:
+
+- [Summary of Fit Parameters](#Summary).
+- [Scores](#Scores).
+- [Loadings](#Loadings).
 
 ## <a name="Summary">Summary of Fit Parameters</a>
 
@@ -48,6 +51,8 @@ for(int iObs=1;iObs<=nObs;iObs++){
   std::cout<<"\n";
 }
 ```
+
+## <a name="Loadings">Loadings</a>
 
 Below you can find an [example](HandlingModels_GettingScores.cpp) where all this is combined into a stand alone console script:
 ```
