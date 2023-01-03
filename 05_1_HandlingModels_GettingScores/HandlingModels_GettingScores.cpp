@@ -192,7 +192,7 @@ int main(int argc,char* argv[])
 
 
 
-  // Clear structures
+  // Clear structure pointers
   SQ_ClearFloatMatrix(&pQ2CumMatrix);
   SQ_ClearStringVector(&pQ2CumComponentNames);
   SQ_ClearStringVector(&pQ2CumColumnNames);

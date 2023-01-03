@@ -55,6 +55,14 @@ for(int iComp=1;iComp<=nComponentsQ2;iComp++){
 }
 ```
 
+It is a good practise in SIMCA-Q to clear the structure pointers once they are not needed:
+```
+SQ_ClearFloatMatrix(&pQ2CumMatrix);
+SQ_ClearStringVector(&pQ2CumComponentNames);
+SQ_ClearStringVector(&pQ2CumColumnNames);
+SQ_ClearVectorData(&pQ2Cum);
+```
+
 We can use exactly the same approach to retrieve e.g. R2X(cum) component labels and values:
 ```
 // Handle for R2X(cum)
@@ -85,6 +93,12 @@ for(int iComp=1;iComp<=nComponentsR2X;iComp++){
   SQ_GetDataFromFloatMatrix(pR2XCumMatrix, iComp, 1, &valR2XCum);
   R2XCumDataValues.push_back(valR2XCum);
 }
+
+// Clear structure pointers
+SQ_ClearFloatMatrix(&pR2XCumMatrix);
+SQ_ClearStringVector(&pR2XCumComponentNames);
+SQ_ClearStringVector(&pR2XCumColumnNames);
+SQ_ClearVectorData(&pR2XCum);
 ```
 
 ## <a name="Scores">Scores</a>
