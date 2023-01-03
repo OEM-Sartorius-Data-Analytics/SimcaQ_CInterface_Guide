@@ -1,4 +1,4 @@
-# Handling models: Retrieving the scores
+# Handling models: Retrieving properties and parameters of models
 
 *SQ_Model* handles allow retrieving multiple properties and parameters of the models included in SIMCA project/files. Here we will go through the following examples:
 
@@ -16,13 +16,13 @@ For these examples we will assume that a [model has already been loaded onto a *
 
 *SQ_Model* handles allow retrieving the scores for the model worksheet.
 
-We can retrieve a pointer to a *tagSQ_VectorData* structure, that we can use to handle the model scores, by using the function *SQ_GetT()*:
+We can retrieve a pointer to a *tagSQ_VectorData* structure, which we can use to handle the model scores, by using the function *SQ_GetT()*:
 ```
 SQ_VectorData scoresVectorData=NULL;
 SQ_GetT(m_hModel,NULL,&scoresVectorData);
 ```
 
-Here we used NULL t get al scroes from the model. If we would like to select specific scores we would need to use a *SQ_IntVector* handle.
+Here we used NULL to get al scores from the model. If we would like to select specific scores we would need to use a *SQ_IntVector* handle.
 
 From the *SQ_VectorData* handle we can retrieve a handle for the matrix that contains the score values themselves. This new handle will be a pointer to the *tagSQ_FloatMatrix* structure and we can  get it by:
 ```

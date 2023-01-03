@@ -6,4 +6,4 @@
 - [The ModelInfo structure: Obtaining information about models withouth loading them](03_ModelInfoIntroduction/ModelInfo_Introduction.md).
 - [Handling datasets](04_HandlingDatasets/HandlingDatasets_Introduction.md).
 - [Handling models: An introduction](05_0_HandlingModels_Introduction/HandlingModels_Introduction.md).
-- [Handling models: Retrieving the scores](05_1_HandlingModels_GettingScores/HandlingModels_GettingScores.md).
+- [Handling models: Retrieving properties and parameters of models](05_1_HandlingModels_GettingScores/HandlingModels_GettingScores.md).
