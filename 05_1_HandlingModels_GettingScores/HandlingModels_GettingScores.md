@@ -1,13 +1,13 @@
 # Handling models: Retrieving the scores
 
-- <a name="Summary">Summary of Fit Parameters</a>
-- <a name="Scores">Scores</a>
+- [Summary of Fit Parameters](#Summary)
+- [Scores](#Scores)
 
-## [Summary of Fit Parameters](#Summary)
+## <a name="Summary">Summary of Fit Parameters</a>
 
 ...
 
-## [Scores](#Scores)
+## <a name="Scores">Scores</a>
 
 *SQ_Model* handles allow retrieving the scores for the model worksheet.
 
