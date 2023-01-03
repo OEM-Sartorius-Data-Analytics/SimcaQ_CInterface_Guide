@@ -1,4 +1,6 @@
 #include <iostream>
+#include <vector>
+#include <string>
 #include "SIMCAQP.h"
 
 int main(int argc,char* argv[])
@@ -83,41 +85,55 @@ int main(int argc,char* argv[])
   SQ_GetRowNames(pQ2Cum, &pQ2CumComponentNames);
 
   // Find the number of components for which Q2(cum) was calculated
-  int nComponents;
-  SQ_GetNumStringsInVector(pQ2CumComponentNames, &nComponents);
-  std::cout<<"Number of componentss: "<<nComponents<<std::endl;
+  int nComponentsQ2;
+  SQ_GetNumStringsInVector(pQ2CumComponentNames, &nComponentsQ2);
+  std::cout<<"Number of Q2(cum) components: "<<nComponentsQ2<<std::endl;
 
   // Find and print the names of the components for which Q2(cum) was calculated
-  for(int i=1;i<=nComponents;i++){
+  std::vector<std::string> vQ2ComponentNames;
+  for(int i=1;i<=nComponentsQ2;i++){
     SQ_GetStringFromVector(pQ2CumComponentNames, i, szBuffer, sizeof(szBuffer));
-    std::cout<<"Component "<<i<<": "<<szBuffer<<std::endl;
+    vQ2ComponentNames.push_back(szBuffer);
+    std::cout<<"Q2 Component "<<i<<": "<<szBuffer<<std::endl;
   }
-  
+
+  for(auto it = vQ2ComponentNames.begin(); it != vQ2ComponentNames.end(); it++){
+    std::cout<< *it << std::endl;
+  }
+
   // Handle for the calculated quantity (trivial, only Q2(cum))
   SQ_StringVector pQ2CumColumnNames = NULL;
   SQ_GetColumnNames(pQ2Cum, &pQ2CumColumnNames);
 
 
   // Find the number of calculated quantities. Trivial, only 1, Q2(cum)
-  int nColumns;
-  SQ_GetNumStringsInVector(pQ2CumColumnNames, &nColumns);
-  std::cout<<"Number of columns: "<<nColumns<<std::endl;
+  int nColumnsQ2;
+  SQ_GetNumStringsInVector(pQ2CumColumnNames, &nColumnsQ2);
+  std::cout<<"Number of Q2 columns: "<<nColumnsQ2<<std::endl;
 
   // Find and print the names of the calculated quantities.
   // It will be <name_of_model>.Q2(cum)
-  for(int i=1;i<=nColumns;i++){
+  for(int i=1;i<=nColumnsQ2;i++){
     SQ_GetStringFromVector(pQ2CumColumnNames, i, szBuffer, sizeof(szBuffer));
-    std::cout<<"Column "<<i<<": "<<szBuffer<<std::endl;
+    std::cout<<"Q2 Column "<<i<<": "<<szBuffer<<std::endl;
   }
   
   // Handle for Q2(cum) values
   SQ_FloatMatrix pQ2CumMatrix = NULL;
   SQ_GetDataMatrix(pQ2Cum, &pQ2CumMatrix);
 
-  float val;
-  for(int iComp=1;iComp<=nComponents;iComp++){
-    SQ_GetDataFromFloatMatrix(pQ2CumMatrix, iComp, 1, &val);
-    std::cout<<"Q2(cum) for Component "<<iComp<<": "<<val<<std::endl;
+  // Find and print Q2(cum) values for all components for which this quantity was calculated
+  // Also populate a vector with these values
+  float valQ2Cum;
+  std::vector<float> Q2CumDataValues;
+  for(int iComp=1;iComp<=nComponentsQ2;iComp++){
+    SQ_GetDataFromFloatMatrix(pQ2CumMatrix, iComp, 1, &valQ2Cum);
+    Q2CumDataValues.push_back(valQ2Cum);
+    std::cout<<"Q2(cum) for Component "<<iComp<<": "<<valQ2Cum<<std::endl;
+  }
+
+  for(auto it = Q2CumDataValues.begin(); it != Q2CumDataValues.end(); it++){
+    std::cout<< *it << std::endl;
   }
 
 
@@ -135,8 +151,11 @@ int main(int argc,char* argv[])
   std::cout<<"R2X Number of components: "<<nComponentsR2X<<std::endl;
 
   // Find and print the names of the components for which R2X(cum) was calculated
+  // Also populate a vector with these names
+  std::vector<std::string> vR2XComponentNames;
   for(int i=1;i<=nComponentsR2X;i++){
     SQ_GetStringFromVector(pR2XCumComponentNames, i, szBuffer, sizeof(szBuffer));
+    vR2XComponentNames.push_back(szBuffer);
     std::cout<<"R2X Component "<<i<<": "<<szBuffer<<std::endl;
   }
   
@@ -161,10 +180,14 @@ int main(int argc,char* argv[])
   SQ_FloatMatrix pR2XCumMatrix = NULL;
   SQ_GetDataMatrix(pR2XCum, &pR2XCumMatrix);
 
-  float valR2X;
+  // Find and print R2X(cum) values for all components for which this quantity was calculated
+  // Also populate a vector with these values
+  float valR2XCum;
+  std::vector<float> R2XCumDataValues;
   for(int iComp=1;iComp<=nComponentsR2X;iComp++){
-    SQ_GetDataFromFloatMatrix(pR2XCumMatrix, iComp, 1, &valR2X);
-    std::cout<<"R2X(cum) for Component "<<iComp<<": "<<valR2X<<std::endl;
+    SQ_GetDataFromFloatMatrix(pR2XCumMatrix, iComp, 1, &valR2XCum);
+    R2XCumDataValues.push_back(valR2XCum);
+    std::cout << "R2X(cum) for Component " << iComp << ": " << valR2XCum << std::endl;
   }
 
 

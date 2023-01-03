@@ -12,6 +12,81 @@ For these examples we will assume that a [model has already been loaded onto a *
 
 *SQ_Model* handles can be used to e.g., retrieve parameters that summarize the quality of the fit like R2(cum) and Q2(cum).
 
+To obtain Q2(cum) values, start by retrieving a pointer to a *tagSQ_VectorData* structure, which we can use to handle the Q2(cum) parameter, by using the function *SQ_GetQ2Cum()*:
+```
+SQ_VectorData pQ2Cum = NULL;
+SQ_GetQ2Cum(hModel, &pQ2Cum);
+```
+
+We can use this handle to get the number and names of the components for which Q2(cum) was calculated. The first step in this direction is to retrieve a pointer to a *SQ_StringVector* structure to handle these names:
+```
+SQ_StringVector pQ2CumComponentNames = NULL;
+SQ_GetRowNames(pQ2Cum, &pQ2CumComponentNames);
+```
+
+To find the number of components we will use the *SQ_GetRowNames()* function:
+```
+int nComponentsQ2;
+SQ_GetNumStringsInVector(pQ2CumComponentNames, &nComponentsQ2);
+```
+
+and their names can be retrieved by using the *SQ_GetStringFromVector()* function. An example where these names would be stored in a vector of strings would be:
+```
+char szBuffer[256];
+std::vector<std::string> vQ2ComponentNames;
+for(int i=1;i<=nComponentsQ2;i++){
+  SQ_GetStringFromVector(pQ2CumComponentNames, i, szBuffer, sizeof(szBuffer));
+  vQ2ComponentNames.push_back(szBuffer);  
+```
+
+To access the actual *cumulative Q2* values we need first to retrieve a pointer ro a *tagSQ_FloatMatrix* structure:
+```
+SQ_FloatMatrix pQ2CumMatrix = NULL;
+SQ_GetDataMatrix(pQ2Cum, &pQ2CumMatrix);
+```
+
+Then, we can access these values by using the *SQ_GetDataFromFloatMatrix()* function. An example where these values would be stored in a vector of floats would be:
+```
+float val;
+std::vector<float> Q2CumDataValues;
+for(int iComp=1;iComp<=nComponentsQ2;iComp++){
+  SQ_GetDataFromFloatMatrix(pQ2CumMatrix, iComp, 1, &val);
+  Q2CumDataValues.push_back(val);
+}
+```
+
+We can use exactly the same approach to retrieve e.g. R2X(cum) component labels and values:
+```
+// Handle for R2X(cum)
+SQ_VectorData pR2XCum = NULL;
+SQ_GetR2XCum(hModel, &pR2XCum);
+
+// Handle for the names of the components for which R2X(cum) was calculated
+SQ_StringVector pR2XCumComponentNames = NULL;
+SQ_GetRowNames(pR2XCum, &pR2XCumComponentNames);
+
+// Find the number of components for which R2X(cum) was calculated
+int nComponentsR2X;
+SQ_GetNumStringsInVector(pR2XCumComponentNames, &nComponentsR2X);
+
+// Find and the names of the components for which R2X(cum) was calculated
+// Also populate a vector with these names
+std::vector<std::string> vR2XComponentNames;
+for(int i=1;i<=nComponentsR2X;i++){
+  SQ_GetStringFromVector(pR2XCumComponentNames, i, szBuffer, sizeof(szBuffer));
+  vR2XComponentNames.push_back(szBuffer);
+}
+
+// Find R2X(cum) values for all components for which this quantity was calculated
+// Also populate a vector with these values
+float valR2XCum;
+std::vector<float> R2XCumDataValues;
+for(int iComp=1;iComp<=nComponentsR2X;iComp++){
+  SQ_GetDataFromFloatMatrix(pR2XCumMatrix, iComp, 1, &valR2XCum);
+  R2XCumDataValues.push_back(valR2XCum);
+}
+```
+
 ## <a name="Scores">Scores</a>
 
 *SQ_Model* handles allow retrieving the scores for the model worksheet.
@@ -56,77 +131,6 @@ for(int iObs=1;iObs<=nObs;iObs++){
 
 ## <a name="Loadings">Loadings</a>
 
-Below you can find an [example](HandlingModels_GettingScores.cpp) where all this is combined into a stand alone console script:
-```
-#include <iostream>
-#include "SIMCAQP.h"
+## <a name="ExampleScript">Example Script</a>
 
-int main(int argc,char* argv[])
-{
-  // Check that only one input argument was passed when calling the script
-  // i.e., the name of the SIMCA project/file to be opened. Otherwise stop the program
-  if(argc==1)
-    {
-      std::cout<<"\nYou need to pass a SIMCA file as an argument\n";
-      return -1;
-    }
-  else if(argc>2)
-    {
-      std::cout<<"\nToo many arguments\n";
-      return -1;
-    }
-
-  SQ_ErrorCode eError; // handler for SIMCA-Q errors
-  char szError[256]; // C-string for handling SIMCA-Q error descriptions
-
-  // Load the project
-  SQ_Project hProject = NULL;
-  const char * szUSPFile = argv[1];
-  const char * szPassword = NULL;
-  eError = SQ_OpenProject(szUSPFile, szPassword, &hProject);
-  if (eError != SQ_E_OK)
-    {            
-      SQ_GetErrorDescription(eError, szError, sizeof(szError));
-      std::cout << szError << std::endl;
-      return -1;
-    }
-  
-  // Load the model with index = 1
-  SQ_Model hModel = NULL;
-  int iModelIndex = 1;
-  int iModelNumber;
-  SQ_Bool bIsFitted;
-  eError = SQ_GetModelNumberFromIndex(hProject, iModelIndex, &iModelNumber);
-  eError = SQ_GetModel(hProject, iModelNumber, &hModel);
-  // Check if model is correct (=fitted) 
-  if (SQ_IsModelFitted(hModel, &bIsFitted) != SQ_E_OK || bIsFitted != SQ_True)
-    return -1;
-
-  // Load the handles for the model scores
-  SQ_VectorData scoresVectorData=NULL;
-  SQ_GetT(hModel,NULL,&scoresVectorData);
-  SQ_FloatMatrix scoresDatamatrix=NULL;
-  SQ_GetDataMatrix(scoresVectorData, &scoresDatamatrix);
-
-  // Print the model scores
-  int nObs, nScores;
-  SQ_GetNumRowsInFloatMatrix(scoresDatamatrix, &nObs);
-  SQ_GetNumColumnsInFloatMatrix(scoresDatamatrix, &nScores);
-  float value;
-  for(int iObs=1;iObs<=nObs;iObs++){
-    for(int iScore=1;iScore<=nScores;iScore++){
-      SQ_GetDataFromFloatMatrix(scoresDatamatrix, iObs, iScore, &value);
-      std::cout<<value<<"\t";
-    }
-    std::cout<<"\n";
-  }
-
-
-  // Close the project
-  eError = SQ_CloseProject(&hProject);
-  hProject = NULL;
-
-  return 0;
-}
-```
-  
+In this [link]((HandlingModels_GettingScores.cpp)) you can find an example where all this is combined into a stand alone console script.
