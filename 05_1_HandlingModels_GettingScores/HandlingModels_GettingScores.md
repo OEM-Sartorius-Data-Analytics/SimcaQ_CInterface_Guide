@@ -133,4 +133,4 @@ for(int iObs=1;iObs<=nObs;iObs++){
 
 ## <a name="ExampleScript">Example Script</a>
 
-In this [link]((HandlingModels_GettingScores.cpp)) you can find an example where all this is combined into a stand alone console script.
+In this [link](HandlingModels_GettingScores.cpp) you can find an example where all this is combined into a stand alone console script.
