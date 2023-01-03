@@ -1,6 +1,6 @@
 # Handling models: Retrieving properties and parameters of models
 
-*SQ_Model* handles allow retrieving multiple properties and parameters of the models included in SIMCA project/files. Here we will go through the following examples:
+*SQ_Model* handles allow retrieving multiple properties and parameters of the models included in SIMCA project/files. Here we will go through the following examples that will show how to work with:
 
 - [Summary of Fit Parameters](#Summary).
 - [Scores](#Scores).
