@@ -1,8 +1,17 @@
 # Handling models: Retrieving the scores
 
+- <a name="Summary">Summary of Fit Parameters</a>
+- <a name="Scores">Scores</a>
+
+## [Summary of Fit Parameters](#Summary)
+
+...
+
+## [Scores](#Scores)
+
 *SQ_Model* handles allow retrieving the scores for the model worksheet.
 
-Given that a [model has been loaded onto a *SQ_Model* handle](../05_0_HandlingModels_Introduction/HandlingModels_Introduction.md), let's name it *hModel* as in the previous example, we can retrieve a pointer to a *tagSQ_VectorData* structure, that we can use to handle the model scores, by using the function SQ_GetT():
+Given that a [model has been loaded onto a *SQ_Model* handle](../05_0_HandlingModels_Introduction/HandlingModels_Introduction.md), let's name it *hModel* as in the previous example, we can retrieve a pointer to a *tagSQ_VectorData* structure, that we can use to handle the model scores, by using the function *SQ_GetT()*:
 ```
 SQ_VectorData scoresVectorData=NULL;
 SQ_GetT(m_hModel,NULL,&scoresVectorData);
