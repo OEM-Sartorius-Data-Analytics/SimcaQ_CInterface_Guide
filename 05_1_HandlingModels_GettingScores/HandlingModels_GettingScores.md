@@ -103,7 +103,7 @@ SQ_ClearVectorData(&pR2XCum);
 
 ## <a name="Scores">Scores</a>
 
-*SQ_Model* handles allow retrieving the scores for the model worksheet.
+*SQ_Model* handles allow retrieving the scores for the observations used to train a model.
 
 We can retrieve a pointer to a *tagSQ_VectorData* structure, which we can use to handle the model scores, by using the function *SQ_GetT()*:
 ```
@@ -144,6 +144,35 @@ for(int iObs=1;iObs<=nObs;iObs++){
 ```
 
 ## <a name="Loadings">Loadings</a>
+
+*SQ_Model* handles allow retrieving the loadings for the a model variables. The process is similar to that shown above for obtaining the scores of a model. However, in this case we will use the *SQ_GetP()*. This function receives as input parameters 1) the pointer to the structure encapsulating the model, 2) a pointer to a *tagSQ_IntVector* structure with the variable indices to retrieve (or NULL if want want to retrieve all of them), 3) a *SQ_TriStateReconstructState* SIMCA-Q enumeration indicating whether we are working with a wavelet spectral compressed project and 4) the address of a pointer to a *tagSQ_VectorData* structure that we will use to handle the loading. For example, to retrieve such a pointer for all loadings:
+```
+SQ_VectorData hLoadingsVectorData = NULL;
+SQ_GetP(hModel, NULL, SQ_Reconstruct_False, &hLoadingsVectorData);
+```
+
+We can get a handle for the loadings that were calculated by creating a pointer to a *tagSQ_StringVector* structure:
+```
+SQ_StringVector hVariablesLoadingsVectorData;
+SQ_GetRowNames(hLoadingsVectorData, &hVariablesLoadingsVectorData);
+```
+
+We can use these pointer to find the number of loadings that were calculated:
+```
+int numLoadings;
+SQ_GetNumStringsInVector(hVariablesLoadingsVectorData, &numLoadings);
+```
+
+as well as the actual loading names. Below is an example where a string vector is populated with these names:
+```
+std::vector<std::string> vLoadingNames;
+for(int iLoading=1; iLoading<=numLoadings ; iLoading++){
+  SQ_GetStringFromVector(hVariablesLoadingsVectorData, iLoading, szBuffer, sizeof(szBuffer));
+  vLoadingNames.push_back(szBuffer);
+}  
+```
+
+
 
 ## <a name="ExampleScript">Example Script</a>
 

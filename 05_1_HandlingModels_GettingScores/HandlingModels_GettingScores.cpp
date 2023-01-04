@@ -205,6 +205,57 @@ int main(int argc,char* argv[])
   
 
   ////////////////////////////////////////////////////////////////////////
+  //////////// LOADINGS
+  ////////////////////////////////////////////////////////////////////////
+
+  // Handle for all model loadings
+  SQ_VectorData hLoadingsVectorData = NULL;
+  SQ_GetP(hModel, NULL, SQ_Reconstruct_False, &hLoadingsVectorData);
+
+  // Handle for loadings names
+  SQ_StringVector hVariablesLoadingsVectorData;
+  SQ_GetRowNames(hLoadingsVectorData, &hVariablesLoadingsVectorData);
+
+  int numLoadings;
+  SQ_GetNumStringsInVector(hVariablesLoadingsVectorData, &numLoadings);
+  std::cout<<"Num Loadings: "<< numLoadings << std::endl;
+
+  // Find all loading names and populate a string vector with them
+  std::vector<std::string> vLoadingNames;
+  for(int iLoading=1; iLoading<=numLoadings ; iLoading++){
+    SQ_GetStringFromVector(hVariablesLoadingsVectorData, iLoading, szBuffer, sizeof(szBuffer));
+    vLoadingNames.push_back(szBuffer);
+  }  
+
+  // Print all loadings names
+  for(std::vector<std::string>::size_type iLoading = 0; iLoading < vLoadingNames.size(); iLoading++){
+    std::cout << "Loading(" << iLoading + 1 << "): " << vLoadingNames.at(iLoading) << std::endl;
+  }
+  
+  // Handle for the names of components for which loadings have been retrieved
+  SQ_StringVector hComponentsLoadingsVectorData;
+  SQ_GetColumnNames(hLoadingsVectorData, &hComponentsLoadingsVectorData);
+
+  // Find number of components for which loadings have been retrieved
+  int numComponentsLoadings;
+  SQ_GetNumStringsInVector(hComponentsLoadingsVectorData, &numComponentsLoadings);
+  std::cout<<"Num Components for which loadings have been retrieved: "<< numComponentsLoadings << std::endl;
+
+  // Find all component names for which loadings were calculated and populate a string vector with them
+  std::vector<std::string> vComponentLoadingNames;
+  for(int iComponentLoading=1; iComponentLoading<=numComponentsLoadings ; iComponentLoading++){
+    SQ_GetStringFromVector(hComponentsLoadingsVectorData, iComponentLoading, szBuffer, sizeof(szBuffer));
+    vComponentLoadingNames.push_back(szBuffer);
+  }
+
+  // Print all component names for which loadings were calculated
+  for(std::vector<std::string>::size_type iComponentLoading = 0; iComponentLoading < vComponentLoadingNames.size(); iComponentLoading++){
+    std::cout << "Component Loading(" << iComponentLoading + 1 << "): " << vComponentLoadingNames.at(iComponentLoading) << std::endl;
+  }
+  
+
+
+  ////////////////////////////////////////////////////////////////////////
   //////////// CLOSE THE MODEL AND PROJECT
   ////////////////////////////////////////////////////////////////////////
 
