@@ -5,6 +5,7 @@
 - [Summary of Fit Parameters](#Summary).
 - [Scores](#Scores).
 - [Loadings](#Loadings).
+- [Contributions](#Contributions).
 
 For these examples we will assume that a [model has already been loaded onto a *SQ_Model* handle](../05_0_HandlingModels_Introduction/HandlingModels_Introduction.md), let's name it *hModel*.
 
@@ -203,6 +204,10 @@ int iComp =1;
 float pfVal;
 SQ_GetDataFromFloatMatrix(hLoadingsDataMatrix, iVar, iComp, &pfVal);
 ```
+
+## <a name="Contributions">Contributions</a>
+
+...
 
 ## <a name="ExampleScript">Example Script</a>
 
