@@ -252,6 +252,18 @@ int main(int argc,char* argv[])
   for(std::vector<std::string>::size_type iComponentLoading = 0; iComponentLoading < vComponentLoadingNames.size(); iComponentLoading++){
     std::cout << "Component Loading(" << iComponentLoading + 1 << "): " << vComponentLoadingNames.at(iComponentLoading) << std::endl;
   }
+
+  // Handle for the Loadings Datamatrix
+  SQ_FloatMatrix hLoadingsDataMatrix = NULL;
+  SQ_GetDataMatrix(hLoadingsVectorData, &hLoadingsDataMatrix);
+  
+
+  // Retrieve the loading value for specific variable and component
+  int iVar = 47;
+  int iComp =1;
+  float pfVal;
+  SQ_GetDataFromFloatMatrix(hLoadingsDataMatrix, iVar, iComp, &pfVal);
+  std::cout<<"Val: "<< pfVal << std::endl;
   
 
 

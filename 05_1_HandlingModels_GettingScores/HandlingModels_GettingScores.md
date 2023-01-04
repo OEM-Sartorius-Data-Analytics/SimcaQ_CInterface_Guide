@@ -190,6 +190,20 @@ for(int iComponentLoading=1; iComponentLoading<=numComponentsLoadings ; iCompone
 }
 ```
 
+To retrieve the actual loading values from the loadings handle we need first to retrieve a hadle for these values, which will be a pointer to a *tagSQ_FloatMatrix* structure:
+```
+SQ_FloatMatrix hLoadingsDataMatrix = NULL;
+SQ_GetDataMatrix(hLoadingsVectorData, &hLoadingsDataMatrix);
+```
+
+From here we can use the *SQ_GetDataFromFloatMatrix()" method, which receives as inputs 1) *SQ_FloatMatrix* handle, 2) the variable number of interest, 3) the component number of interest and 4) the address of the float value we want to retrieve. For instance, to retrieve the loading value for variable 47 and component 1:
+```
+int iVar = 47;
+int iComp =1;
+float pfVal;
+SQ_GetDataFromFloatMatrix(hLoadingsDataMatrix, iVar, iComp, &pfVal);
+```
+
 ## <a name="ExampleScript">Example Script</a>
 
 In this [link](HandlingModels_GettingScores.cpp) you can find an example where all this is combined into a stand alone console script.
