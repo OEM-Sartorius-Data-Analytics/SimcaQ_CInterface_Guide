@@ -172,7 +172,23 @@ for(int iLoading=1; iLoading<=numLoadings ; iLoading++){
 }  
 ```
 
+In a similar way we can access the components of the loadings:
+```
+// Handle for the names of components for the retrieved loadings
+SQ_StringVector hComponentsLoadingsVectorData;
+SQ_GetColumnNames(hLoadingsVectorData, &hComponentsLoadingsVectorData);
 
+// Find number of components for the retrieved loadings 
+int numComponentsLoadings;
+SQ_GetNumStringsInVector(hComponentsLoadingsVectorData, &numComponentsLoadings);
+
+// Find component names for the retrieved loadings and populate a string vector with them
+std::vector<std::string> vComponentLoadingNames;
+for(int iComponentLoading=1; iComponentLoading<=numComponentsLoadings ; iComponentLoading++){
+  SQ_GetStringFromVector(hComponentsLoadingsVectorData, iComponentLoading, szBuffer, sizeof(szBuffer));
+  vComponentLoadingNames.push_back(szBuffer);
+}
+```
 
 ## <a name="ExampleScript">Example Script</a>
 

@@ -232,16 +232,16 @@ int main(int argc,char* argv[])
     std::cout << "Loading(" << iLoading + 1 << "): " << vLoadingNames.at(iLoading) << std::endl;
   }
   
-  // Handle for the names of components for which loadings have been retrieved
+  // Handle for the names of components for the retrieved loadings
   SQ_StringVector hComponentsLoadingsVectorData;
   SQ_GetColumnNames(hLoadingsVectorData, &hComponentsLoadingsVectorData);
 
-  // Find number of components for which loadings have been retrieved
+  // Find number of components for the retrieved loadings 
   int numComponentsLoadings;
   SQ_GetNumStringsInVector(hComponentsLoadingsVectorData, &numComponentsLoadings);
   std::cout<<"Num Components for which loadings have been retrieved: "<< numComponentsLoadings << std::endl;
 
-  // Find all component names for which loadings were calculated and populate a string vector with them
+  // Find component names for the retrieved loadings and populate a string vector with them
   std::vector<std::string> vComponentLoadingNames;
   for(int iComponentLoading=1; iComponentLoading<=numComponentsLoadings ; iComponentLoading++){
     SQ_GetStringFromVector(hComponentsLoadingsVectorData, iComponentLoading, szBuffer, sizeof(szBuffer));
