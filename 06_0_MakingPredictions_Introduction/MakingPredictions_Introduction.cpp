@@ -79,11 +79,23 @@ int main(int argc,char* argv[])
   SQ_GetVariablesForPrediction(hPreparePrediction, &hVariableVector);
 
   int numPredSetVariables;
-  SQ_GetVariablesForPrediction(hPreparePrediction, &hVariableVector);
+  SQ_GetNumVariablesInVector(hVariableVector, &numPredSetVariables);
+  std::cout<<"Number of variables required for prediction: " << numPredSetVariables << std::endl;
+
+  for(int iVar=1;iVar<=numPredSetVariables;iVar++){
+    
+  }
 
   //std::vector<float> fQuantitativeData = CreateFakeData();
 
   
+  ////////////////////////////////////////////////////////////////////////
+  //////////// CLEAR HANDLES
+  ////////////////////////////////////////////////////////////////////////
+
+  SQ_ClearPreparePrediction(&hPreparePrediction);
+  hPreparePrediction = NULL;
+
   ////////////////////////////////////////////////////////////////////////
   //////////// CLOSE THE MODEL AND PROJECT
   ////////////////////////////////////////////////////////////////////////

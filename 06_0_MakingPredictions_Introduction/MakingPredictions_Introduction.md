@@ -9,3 +9,9 @@ From this point, the first step to make a prediction consist in creating a point
 SQ_PreparePrediction hPreparePrediction = NULL;
 SQ_GetPreparePrediction(hModel, &hPreparePrediction);
 ```
+
+You can now get the number of variables required for making predictions by:
+```
+int numPredSetVariables;
+SQ_GetNumVariablesInVector(hVariableVector, &numPredSetVariables);
+```
