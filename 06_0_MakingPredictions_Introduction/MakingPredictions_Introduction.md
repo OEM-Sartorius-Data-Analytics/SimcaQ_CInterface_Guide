@@ -28,3 +28,15 @@ This allows us to retrieve e.g., the name of the variable by using the *SQ_GetVa
 char szVariableName[100];
 SQ_GetVariableName(hVariable, 1, szVariableName, sizeof(szVariableName));
 ```
+
+The next step will be to populate the SQ_PreparePrediction structure pointer with the data from which we will predict a desired quantity. Let's imagine that we have the input data in the form of a std::vector<float>, let's name it fQuantitativeData, with a size equal to that of the number of variables needed for prediction, containing the variable values for just one observation, also in the same order than that for the observations used to build the model. In this case, we could populate the *SQ_PreparePrediction* structure pointer by:
+
+```
+iObs = 1;
+for (int iVar = 1; iVar <= numPredSetVariables; ++iVar){
+  SQ_SetQuantitativeData(hPreparePrediction, iObs, iVar, fQuantitativeData[iVar-1]);
+}
+```
+
+We could actually populate this handle with variable values from many predictions, we would just need to e.g., have the input vector in a 2D vector and iterate as well over the number of observations.
+
