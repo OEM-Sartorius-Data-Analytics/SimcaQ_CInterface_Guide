@@ -2,6 +2,7 @@
 #include <cassert>
 #include <vector>
 #include <map>
+#include <string>
 #include "SIMCAQP.h"
 
 int main(int argc,char* argv[])
@@ -82,8 +83,14 @@ int main(int argc,char* argv[])
   SQ_GetNumVariablesInVector(hVariableVector, &numPredSetVariables);
   std::cout<<"Number of variables required for prediction: " << numPredSetVariables << std::endl;
 
+  char szVariableName[100];
+  std::vector<std::string> vVariableNames;
+  SQ_Variable hVariable = NULL;
   for(int iVar=1;iVar<=numPredSetVariables;iVar++){
-    
+    SQ_GetVariableFromVector(hVariables, iVar, &hVariable);
+    SQ_GetVariableName (hVariable, 1, szVariableName, sizeof(szVariableName));
+    vVariableNames.push_back(szVariableName);
+    std::cout<<"Variable Name [" << iVar << "]: " << szVariableName << std::endl;
   }
 
   //std::vector<float> fQuantitativeData = CreateFakeData();

@@ -15,3 +15,16 @@ You can now get the number of variables required for making predictions by:
 int numPredSetVariables;
 SQ_GetNumVariablesInVector(hVariableVector, &numPredSetVariables);
 ```
+
+We can use the *SQ_GetVariableFromVector* to retrieve a handle for specific variables. For instance to get a handle for the first variable:
+```
+iVar = 1;
+SQ_Variable hVariable = NULL;
+SQ_GetVariableFromVector(hVariables, iVar, &hVariable);
+```
+
+This allows us to retrieve e.g., the name of the variable by using the *SQ_GetVariableName()* function:
+```
+char szVariableName[100];
+SQ_GetVariableName(hVariable, 1, szVariableName, sizeof(szVariableName));
+```
