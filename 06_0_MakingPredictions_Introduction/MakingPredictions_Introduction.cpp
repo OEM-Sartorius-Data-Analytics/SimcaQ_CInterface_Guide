@@ -3,6 +3,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <algorithm>  
 #include "SIMCAQP.h"
 
 int main(int argc,char* argv[])
@@ -46,31 +47,9 @@ int main(int argc,char* argv[])
   if (SQ_IsModelFitted(hModel, &bIsFitted) != SQ_E_OK || bIsFitted != SQ_True)
     return -1;
 
+  
   ////////////////////////////////////////////////////////////////////////
-  //////////// VARIABLE-POSITION DICTIONARY
-  ////////////////////////////////////////////////////////////////////////
-
-  std::map<std::string, int> DataLookup;
-
-  SQ_Dataset hDataset = NULL;
-  SQ_GetDataset(hProject, 1, &hDataset);
-
-  SQ_VariableVector hVariables = NULL;
-  SQ_GetDataSetVariableNames(hDataset, &hVariables);
-
-  int NumVar;
-  SQ_GetNumVariablesInVector(hVariables, &NumVar);
-
-  char szName[100];
-  for (int iVar = 1; iVar <= NumVar; ++iVar){
-    SQ_Variable hVariable = NULL;
-    SQ_GetVariableFromVector(hVariables, iVar, &hVariable);
-    SQ_GetVariableName(hVariable, 1, szName, sizeof(szName));
-    DataLookup[szName] = iVar;
-  }
-
-  ////////////////////////////////////////////////////////////////////////
-  //////////// VARIABLE-POSITION DICTIONARY
+  //////////// ACCESSING PREDICTION VARIABLES
   ////////////////////////////////////////////////////////////////////////
 
   SQ_PreparePrediction hPreparePrediction = NULL;
@@ -87,11 +66,67 @@ int main(int argc,char* argv[])
   std::vector<std::string> vVariableNames;
   SQ_Variable hVariable = NULL;
   for(int iVar=1;iVar<=numPredSetVariables;iVar++){
-    SQ_GetVariableFromVector(hVariables, iVar, &hVariable);
+    SQ_GetVariableFromVector(hVariableVector, iVar, &hVariable);
     SQ_GetVariableName (hVariable, 1, szVariableName, sizeof(szVariableName));
     vVariableNames.push_back(szVariableName);
     std::cout<<"Variable Name [" << iVar << "]: " << szVariableName << std::endl;
   }
+
+  ////////////////////////////////////////////////////////////////////////
+  //////////// VARIABLE-POSITION DICTIONARY
+  ////////////////////////////////////////////////////////////////////////
+
+  std::map<std::string, int> DataLookup;
+  for(int iVar=1;iVar<=numPredSetVariables;iVar++){
+    SQ_GetVariableFromVector(hVariableVector, iVar, &hVariable);
+    SQ_GetVariableName (hVariable, 1, szVariableName, sizeof(szVariableName));
+    DataLookup[szVariableName] = iVar;
+  }
+
+  ////////////////////////////////////////////////////////////////////////
+  //////////// POPULATING SQ_PREPAREPREDICTION WITH INPUT DATA
+  ////////////////////////////////////////////////////////////////////////
+
+  std::vector<float> fQuantitativeData;
+  std::vector<std::string> inputVariables;
+  std::vector<int>::iterator it;
+
+  //auto it = find(inputVariables.begin(), inputVariables.end(), 30);
+
+  /*
+
+  SQ_Dataset hDataset = NULL;
+  SQ_GetDataset(hProject, 1, &hDataset);
+
+  SQ_VariableVector hVariables = NULL;
+  SQ_GetDataSetVariableNames(hDataset, &hVariables);
+
+  int NumVar;
+  SQ_GetNumVariablesInVector(hVariables, &NumVar);
+
+  char szName[100];
+  for (int iVar = 1; iVar <= NumVar; ++iVar){
+    SQ_Variable hVariable = NULL;
+    SQ_GetVariableFromVector(hVariables, iVar, &hVariable);
+    SQ_GetVariableName(hVariable, 1, szName, sizeof(szName));
+    DataLookup[szName] = iVar;
+    }*/
+
+  for (auto const& [key, val] : DataLookup){
+    std::cout << key        // string (key)
+              << ':'  
+              << val        // string's value
+              << std::endl;
+    auto res = find(inputVariables.begin(), inputVariables.end(), key);
+
+    if(res!=inputVariables.end()){
+      int position = res - inputVariables.begin();
+      SQ_SetQuantitativeData(hPreparePrediction, 1, position, fQuantitativeData[position]);
+    }
+  }
+
+  
+
 
   //std::vector<float> fQuantitativeData = CreateFakeData();
 
