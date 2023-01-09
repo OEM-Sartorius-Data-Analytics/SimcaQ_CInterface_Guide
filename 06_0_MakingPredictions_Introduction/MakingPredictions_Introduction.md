@@ -64,3 +64,29 @@ for (auto const& [key, val] : DataLookup){
   }
 }
 ```
+
+Once we have feed the *SQ_PreparePrediction* handle with the correct data and in the correct order, we can create a *SQ_Prediction* handle that will allow us to handle predicted quantities:
+```
+SQ_Prediction hPrediction = NULL;
+SQ_GetPrediction(hPreparePrediction, &hPrediction);
+```
+
+At this stage we can access all possible predicted quantities using the fuctions declared in *SQPrediction.h*. For instance, to retrieve a handle for the predicted scores:
+```
+SQ_VectorData hScoresHandle = NULL;
+SQ_GetTPS(hPredictionHandle, NULL, &hScoresHandle);
+```
+
+And to get a handle for the actual values for the predicted scores:
+```
+SQ_FloatMatrix hScoresMatrix = NULL;
+SQ_GetDataMatrix(hScoresHandle, &hScoresMatrix);
+```
+
+Finally, we can retrieve the score using the *SQ_GetDataFromFloatMatrix()* function, which receives as input parameters the handle for the scores, the observation index, the component index and the address of the retrieved float value. For instance, to retrieve the score value of the first predicted observation and second component:
+```
+float fScoreValue;
+int iObs = 1;
+int iComp = 2;
+SQ_GetDataFromFloatMatrix(hScoresMatrix, iObs, iComp, &fScoreValue);
+```

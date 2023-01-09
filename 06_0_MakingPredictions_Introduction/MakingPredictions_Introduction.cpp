@@ -125,6 +125,25 @@ int main(int argc,char* argv[])
     }
   }
 
+  ////////////////////////////////////////////////////////////////////////
+  //////////// GET THE PREDICTION
+  ////////////////////////////////////////////////////////////////////////
+
+  // Retrieve prrediction handle
+  SQ_Prediction hPredictionHandle = NULL;
+  SQ_GetPrediction(hPreparePrediction, &hPredictionHandle);
+
+  SQ_VectorData hScoresHandle = NULL;
+  SQ_GetTPS(hPredictionHandle, NULL, &hScoresHandle);
+
+  SQ_FloatMatrix hScoresMatrix = NULL;
+  SQ_GetDataMatrix(hScoresHandle, &hScoresMatrix);
+
+  float fScoreValue;
+  int iObs = 1;
+  int iComp = 2;
+  SQ_GetDataFromFloatMatrix(hScoresMatrix, iObs, iComp, &fScoreValue);
+
   
 
 
