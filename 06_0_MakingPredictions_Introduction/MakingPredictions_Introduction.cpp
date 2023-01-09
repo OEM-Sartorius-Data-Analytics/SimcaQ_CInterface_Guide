@@ -62,9 +62,9 @@ int main(int argc,char* argv[])
 
   char szName[100];
   for (int iVar = 1; iVar <= NumVar; ++iVar){
-    SQ_Variable pVariable = NULL;
-    SQ_GetVariableFromVector(pVariables, iVar, &pVariable);
-    SQ_GetVariableName(pVariable, 1, szName, sizeof(szName));
+    SQ_Variable hVariable = NULL;
+    SQ_GetVariableFromVector(hVariables, iVar, &hVariable);
+    SQ_GetVariableName(hVariable, 1, szName, sizeof(szName));
     DataLookup[szName] = iVar;
   }
 
@@ -81,7 +81,7 @@ int main(int argc,char* argv[])
   int numPredSetVariables;
   SQ_GetVariablesForPrediction(hPreparePrediction, &hVariableVector);
 
-  std::vector<float> fQuantitativeData = CreateFakeData();
+  //std::vector<float> fQuantitativeData = CreateFakeData();
 
   
   ////////////////////////////////////////////////////////////////////////
