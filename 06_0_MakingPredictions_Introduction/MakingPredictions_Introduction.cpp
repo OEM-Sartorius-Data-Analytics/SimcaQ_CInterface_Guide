@@ -199,6 +199,16 @@ int main(int argc,char* argv[])
   SQ_VectorData hScoresHandle = NULL;
   SQ_GetTPS(hPredictionHandle, NULL, &hScoresHandle);
 
+  /*
+
+  int numberComponentsForPredcition = 1;
+  SQ_IntVector m_vector = NULL;
+  SQ_InitIntVector(&m_vector, iSize);
+  SQ_SetDataInIntVector(m_vector, 1, 1);
+  SQ_GetTPS(hPredictionHandle, &m_vector, &hScoresHandle);
+
+  */
+
   SQ_FloatMatrix hScoresMatrix = NULL;
   SQ_GetDataMatrix(hScoresHandle, &hScoresMatrix);
 
@@ -208,6 +218,9 @@ int main(int argc,char* argv[])
   SQ_GetDataFromFloatMatrix(hScoresMatrix, iObs, iComp, &fScoreValue);
 
   std::cout << "score value: " << fScoreValue << std::endl;
+
+
+  
   
 
   

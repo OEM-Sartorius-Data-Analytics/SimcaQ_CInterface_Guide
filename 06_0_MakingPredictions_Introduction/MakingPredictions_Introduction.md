@@ -4,6 +4,8 @@ One of the main uses of SIMCA-Q is to make predictions from new data based on a 
 
 To illustrate how predictions work in SIMCA-Q, we will start from a point where we will assume that handles for a SIMCA project and for the model within that project that will be used to make predictions, let's name them *hProject* and *hModel*, have already been created.
 
+## Prepare Prediction Handles
+
 From this point, the first step to make a prediction consist in creating a pointer to a *tagSQ_PreparePrediction* structure that we will use for all preparatory steps of the prediction process:
 ```
 SQ_PreparePrediction hPreparePrediction = NULL;
@@ -65,16 +67,34 @@ for (auto const& [key, val] : DataLookup){
 }
 ```
 
+## Prediction Handles
+
 Once we have feed the *SQ_PreparePrediction* handle with the correct data and in the correct order, we can create a *SQ_Prediction* handle that will allow us to handle predicted quantities:
 ```
 SQ_Prediction hPrediction = NULL;
 SQ_GetPrediction(hPreparePrediction, &hPrediction);
 ```
 
-At this stage we can access all possible predicted quantities using the fuctions declared in *SQPrediction.h*. For instance, to retrieve a handle for the predicted scores:
+### Prediction Scores
+
+At this stage we can access all possible predicted quantities using the fuctions declared in *SQPrediction.h*. For instance, to retrieve a handle for the predicted scores we would use the *SQ_GetTPS()* function. This function receives as input arguments:
+- The handle for the predictions.
+- The address of a *SQ_intVector* handle accounting for the components to be used in the prediction, or NULL/nullptr if you want to use all components.
+- The address of a *SQ_VectorData* structure pointer that will be used to handle the scores.
+
+For instance, if we want to use all components:
 ```
 SQ_VectorData hScoresHandle = NULL;
 SQ_GetTPS(hPredictionHandle, NULL, &hScoresHandle);
+```
+
+If for instance we will like to use only the first component:
+```
+SQ_Prediction hPredictionHandle = NULL;
+SQ_IntVector m_vector = NULL;
+SQ_InitIntVector(&m_vector, iSize);
+SQ_SetDataInIntVector(m_vector, 1, 1);
+SQ_GetTPS(hPredictionHandle, &m_vector, &hScoresHandle);
 ```
 
 And to get a handle for the actual values for the predicted scores:
@@ -83,10 +103,31 @@ SQ_FloatMatrix hScoresMatrix = NULL;
 SQ_GetDataMatrix(hScoresHandle, &hScoresMatrix);
 ```
 
-Finally, we can retrieve the score using the *SQ_GetDataFromFloatMatrix()* function, which receives as input parameters the handle for the scores, the observation index, the component index and the address of the retrieved float value. For instance, to retrieve the score value of the first predicted observation and second component:
+Finally, we can retrieve the score using the *SQ_GetDataFromFloatMatrix()* function, which receives as input parameters the handle for the scores, the observation index, the component index and the address of the retrieved float value. For instance, to retrieve the score value of the first predicted observation and first component:
 ```
 float fScoreValue;
 int iObs = 1;
-int iComp = 2;
+int iComp = 1;
 SQ_GetDataFromFloatMatrix(hScoresMatrix, iObs, iComp, &fScoreValue);
+```
+
+### Predicted values of Y variables
+
+To retrieve the predicted values of Y variables we can use the *SQ_GetYPredPS()*. This function receives as input parameters:
+- The handle for the predictions.
+- The number of the component in the model we want the results from. For an OPLS model, the last predictive component is the only valid one.
+- A *SQ_UnscaledState* handle, *True* if the function will return the y-values in the (unscaled) metric of the dataset. If *False*, the returned y-values will be in the scaled and centered metric of the workset.
+- A *SQ_BacktransformedState* handle, *True* if the function will return the y-values in the unscaled untransformed metric of the workset. If *False* the returned y-values will be transformed in the same way as the workset.
+- The address of a *SQ_IntVector* handle accounting for a list with the indices of Y columns to use. If *NULL* all columns in the model will be used.
+- The address of a *SQ_VectorData* structure pointer that will be used to handle the predicted Y values.
+
+For instance, if we want to retrieve a predicted unscaled untransformed Y value using all predicting components and Y columns:
+
+```
+int numPredictiveScores;
+SQ_GetNumberOfPredictiveComponents(hModel, &numPredictiveScores);
+
+SQ_VectorData hPredictedYs;
+
+SQ_GetYPredPS(hPredictionHandle, numPredictiveScores, True, True, NULL, &hPredictedYs);
 ```
