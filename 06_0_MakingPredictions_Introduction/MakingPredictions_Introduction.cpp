@@ -221,7 +221,23 @@ int main(int argc,char* argv[])
 
 
   
-  
+  int numPredictiveScores = 1;
+  //SQ_GetNumberOfPredictiveComponents(hModel, &numPredictiveScores);
+
+  SQ_VectorData hPredictedYs = NULL;
+
+  SQ_GetYPredPS(hPredictionHandle, numPredictiveScores, SQ_Unscaled_True, SQ_Backtransformed_True, NULL, &hPredictedYs);
+
+  SQ_FloatMatrix hYMatrix = NULL;
+  SQ_GetDataMatrix(hPredictedYs, &hYMatrix);
+
+  float fYValue;
+  //int iObs = 1;
+  //int iComp = 1;
+  SQ_GetDataFromFloatMatrix(hYMatrix, iObs, iComp, &fYValue);
+
+
+  std::cout << "predicted y: " << fYValue << std::endl;
 
   
 

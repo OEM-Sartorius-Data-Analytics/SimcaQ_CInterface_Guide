@@ -129,5 +129,5 @@ SQ_GetNumberOfPredictiveComponents(hModel, &numPredictiveScores);
 
 SQ_VectorData hPredictedYs;
 
-SQ_GetYPredPS(hPredictionHandle, numPredictiveScores, True, True, NULL, &hPredictedYs);
+SQ_GetYPredPS(hPredictionHandle, numPredictiveScores, SQ_Unscaled_True, SQ_Backtransformed_True, NULL, &hPredictedYs);
 ```
