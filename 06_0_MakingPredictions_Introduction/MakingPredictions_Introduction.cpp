@@ -3,8 +3,45 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <algorithm>  
+#include <algorithm>
+#include <fstream>
+#include <sstream>
 #include "SIMCAQP.h"
+
+void ReadInputFile(std::string fileName, std::vector<std::string>& inputVariables, std::vector<float>& fQuantitativeData)
+{
+  std::ifstream file;
+
+  file.open(fileName);
+
+  /*
+  if(!file.is_open()){
+    std::cout << "Could not open input file" << std::endl;
+    return -1;
+  }
+  */
+
+  std::string line, word;
+
+  for(int i=1;i<=2;i++){
+    if(i==1){
+      std::getline(file, line);
+      std::stringstream s(line);
+      while (std::getline(s, word, ',')) {
+	//std::cout<<word<<std::endl;
+	inputVariables.push_back(word);
+      }
+    }
+    else if(i==2){
+      std::getline(file, line);
+      std::stringstream s(line);
+      while (std::getline(s, word, ',')) {
+	//std::cout<<std::stof(word)<<std::endl;
+	fQuantitativeData.push_back(std::stof(word));
+      }
+    }
+  }
+}
 
 int main(int argc,char* argv[])
 {
@@ -69,7 +106,7 @@ int main(int argc,char* argv[])
     SQ_GetVariableFromVector(hVariableVector, iVar, &hVariable);
     SQ_GetVariableName (hVariable, 1, szVariableName, sizeof(szVariableName));
     vVariableNames.push_back(szVariableName);
-    std::cout<<"Variable Name [" << iVar << "]: " << szVariableName << std::endl;
+    //std::cout<<"Variable Name [" << iVar << "]: " << szVariableName << std::endl;
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -84,11 +121,32 @@ int main(int argc,char* argv[])
   }
 
   ////////////////////////////////////////////////////////////////////////
-  //////////// POPULATING SQ_PREPAREPREDICTION WITH INPUT DATA
+  //////////// GET INPUT DATA FOR PREDICTION
   ////////////////////////////////////////////////////////////////////////
 
   std::vector<float> fQuantitativeData;
   std::vector<std::string> inputVariables;
+
+  std::string fileName = "predictionDataFile.csv";
+  ReadInputFile(fileName, inputVariables, fQuantitativeData);
+
+  /*
+
+  for(std::string s: inputVariables)
+    std::cout << "s = " << s << std::endl;
+
+  for(float f: fQuantitativeData)
+    std::cout << "f = " << f << std::endl;
+
+  */
+  
+
+
+
+  ////////////////////////////////////////////////////////////////////////
+  //////////// POPULATING SQ_PREPAREPREDICTION WITH INPUT DATA
+  ////////////////////////////////////////////////////////////////////////
+
   std::vector<int>::iterator it;
 
   //auto it = find(inputVariables.begin(), inputVariables.end(), 30);
@@ -112,6 +170,8 @@ int main(int argc,char* argv[])
     DataLookup[szName] = iVar;
     }*/
 
+  
+
   for (auto const& [key, val] : DataLookup){
     std::cout << key        // string (key)
               << ':'  
@@ -120,14 +180,17 @@ int main(int argc,char* argv[])
     auto res = find(inputVariables.begin(), inputVariables.end(), key);
 
     if(res!=inputVariables.end()){
+      std::cout << "found" << std::endl;
       int position = res - inputVariables.begin();
       SQ_SetQuantitativeData(hPreparePrediction, 1, position, fQuantitativeData[position]);
     }
-  }
+    }
 
   ////////////////////////////////////////////////////////////////////////
   //////////// GET THE PREDICTION
   ////////////////////////////////////////////////////////////////////////
+
+  
 
   // Retrieve prrediction handle
   SQ_Prediction hPredictionHandle = NULL;
@@ -141,15 +204,15 @@ int main(int argc,char* argv[])
 
   float fScoreValue;
   int iObs = 1;
-  int iComp = 2;
+  int iComp = 1;
   SQ_GetDataFromFloatMatrix(hScoresMatrix, iObs, iComp, &fScoreValue);
 
+  std::cout << "score value: " << fScoreValue << std::endl;
+  
+
   
 
 
-  //std::vector<float> fQuantitativeData = CreateFakeData();
-
-  
   ////////////////////////////////////////////////////////////////////////
   //////////// CLEAR HANDLES
   ////////////////////////////////////////////////////////////////////////

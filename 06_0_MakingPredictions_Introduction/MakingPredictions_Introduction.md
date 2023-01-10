@@ -54,7 +54,7 @@ for(int iVar=1;iVar<=numPredSetVariables;iVar++){
 }
 ```
 
-Now suppose that we made functions that read the input data and return the names of the variables within these files as an std::vector<std::string> structure (e.g., with the name *inputVariables*), and the values of these variables as a std::vector<float> structure (e.g., with the name *fQuantitativeData*). Once the above dictionary is created, we can iterate over it, and then check if the variable name is also present in the std::vector<std::string> structure. If that is the case, we can populate the correct position of the *SQ_PreparePrediction* handle with the corresponding value of the std::vector<float> structure:
+Now suppose that we made functions that read the input data and return the names of the variables within these files as an std::vector\<std::string\> structure (e.g., with the name *inputVariables*), and the values of these variables as a std::vector<float> structure (e.g., with the name *fQuantitativeData*). Once the above dictionary is created, we can iterate over it, and then check if the variable name is also present in the std::vector<std::string> structure. If that is the case, we can populate the correct position of the *SQ_PreparePrediction* handle with the corresponding value of the std::vector<float> structure:
 ```
 for (auto const& [key, val] : DataLookup){
   auto res = find(inputVariables.begin(), inputVariables.end(), key);
