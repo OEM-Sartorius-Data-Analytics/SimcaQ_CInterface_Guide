@@ -54,23 +54,25 @@ If you know in advance the structure of your worksetset, you can hard-code the s
 
 In case your input file contains the variable names along witht the variable values, and that these names coincide with those used for variables in the SIMCA model, one can think in workarouds to make the code more robust.
 
-One of this workarounds will consist in creating a dictionary/map with the names of the variables used to build the models as keys, and the position of these variables within the model workset as values, which as shown above can be obtained from *SQ_Variables* handles. We could get this dictionary, let's name it *DataLookup*, as follows:
+One of this workarounds would be as follows:
+
+- The first step would consist in creating a dictionary/map with the names of the variables managed by the *SQ_PreparePrediction* handle as keys, and the position of these variables as values. We could get this dictionary, let's name it *DataLookup*, as follows:
 ```
 std::map<std::string, int> DataLookup;
 for(int iVar=1;iVar<=numPredSetVariables;iVar++){
-  SQ_GetVariableFromVector(hVariableVector, iVar, &hVariable);
+  SQ_GetVariableFromVector(hPredictionVariables, iVar, &hVariable);
   SQ_GetVariableName (hVariable, 1, szVariableName, sizeof(szVariableName));
   DataLookup[szVariableName] = iVar;
 }
 ```
 
-Now suppose that we made functions that read the input data and return the names of the variables within these files as an std::vector\<std::string\> structure (e.g., with the name *inputVariables*), and the values of these variables as a std::vector\<float\> structure (e.g., with the name *fQuantitativeData*). Once the above dictionary is created, we can iterate over it, and then check if the variable name is also present in the std::vector<std::string> structure. If that is the case, we can populate the correct position of the *SQ_PreparePrediction* handle with the corresponding value of the std::vector<float> structure:
+Now suppose that we made functions that read the input data and return the names of the variables within these files as an std::vector\<std::string\> structure (e.g., with the name *inputVariables*), and the values of these variables as a std::vector\<float\> structure (e.g., with the name *fQuantitativeData*). Once the above dictionary is created, we can iterate over it, and then check if the variable name is also present in the std::vector<std::string> structure *inputVariables*. If that is the case, we can populate the correct position of the *SQ_PreparePrediction* handle with the corresponding value of the std::vector<float> structure *fQuantitativeData*:
 ```
 for (auto const& [key, val] : DataLookup){
-  auto res = find(inputVariables.begin(), inputVariables.end(), key);
+  auto res = std::find(inputVariables.begin(), inputVariables.end(), key);
   if(res!=inputVariables.end()){
     int position = res - inputVariables.begin();
-    SQ_SetQuantitativeData(hPreparePrediction, 1, position, fQuantitativeData[position]);
+    SQ_SetQuantitativeData(hPreparePrediction, 1, val, fQuantitativeData[position]);
   }
 }
 ```
@@ -79,13 +81,15 @@ for (auto const& [key, val] : DataLookup){
 
 Once we have feed the *SQ_PreparePrediction* handle with the correct data and in the correct order, we can create a *SQ_Prediction* handle that will allow us to handle predicted quantities:
 ```
-SQ_Prediction hPrediction = NULL;
-SQ_GetPrediction(hPreparePrediction, &hPrediction);
+SQ_Prediction hPredictionHandle = NULL;
+SQ_GetPrediction(hPreparePrediction, &hPredictionHandle);
 ```
 
-### Prediction Scores
+At this stage we can access all possible predicted quantities using the fuctions declared in *SQPrediction.h*.
 
-At this stage we can access all possible predicted quantities using the fuctions declared in *SQPrediction.h*. For instance, to retrieve a handle for the predicted scores we would use the *SQ_GetTPS()* function. This function receives as input arguments:
+### Predictive Scores
+
+To obtain predictive scores, we will first need to retrieve a handle for them. For this we need to use the *SQ_GetTPS()* function. This function receives as input arguments:
 - The handle for the predictions.
 - The address of a *SQ_intVector* handle accounting for the components to be used in the prediction, or NULL/nullptr if you want to use all components.
 - The address of a *SQ_VectorData* structure pointer that will be used to handle the scores.

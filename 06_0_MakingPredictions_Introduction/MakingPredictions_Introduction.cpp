@@ -110,17 +110,17 @@ int main(int argc,char* argv[])
   SQ_PreparePrediction hPreparePrediction = NULL;
   SQ_GetPreparePrediction(hModel, &hPreparePrediction);
   
-  SQ_VariableVector hVariableVector = NULL;
-  SQ_GetVariablesForPrediction(hPreparePrediction, &hVariableVector);
+  SQ_VariableVector hPredictionVariables = NULL;
+  SQ_GetVariablesForPrediction(hPreparePrediction, &hPredictionVariables);
 
   int numPredSetVariables;
-  SQ_GetNumVariablesInVector(hVariableVector, &numPredSetVariables);
+  SQ_GetNumVariablesInVector(hPredictionVariables, &numPredSetVariables);
   
   char szVariableName[100];
   std::vector<std::string> vVariableNames;
   SQ_Variable hVariable = NULL;
   for(int iVar=1;iVar<=numPredSetVariables;iVar++){
-    SQ_GetVariableFromVector(hVariableVector, iVar, &hVariable);
+    SQ_GetVariableFromVector(hPredictionVariables, iVar, &hVariable);
     SQ_GetVariableName (hVariable, 1, szVariableName, sizeof(szVariableName));
     vVariableNames.push_back(szVariableName);
   }
@@ -131,7 +131,7 @@ int main(int argc,char* argv[])
 
   std::map<std::string, int> DataLookup;
   for(int iVar=1;iVar<=numPredSetVariables;iVar++){
-    SQ_GetVariableFromVector(hVariableVector, iVar, &hVariable);
+    SQ_GetVariableFromVector(hPredictionVariables, iVar, &hVariable);
     SQ_GetVariableName (hVariable, 1, szVariableName, sizeof(szVariableName));
     DataLookup[szVariableName] = iVar;
   }
