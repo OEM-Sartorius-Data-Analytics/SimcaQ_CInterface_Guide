@@ -12,35 +12,41 @@ SQ_PreparePrediction hPreparePrediction = NULL;
 SQ_GetPreparePrediction(hModel, &hPreparePrediction);
 ```
 
-You can now get the number of variables required for making predictions by:
+Among the possibilities offered by *PreparePrediction*, one is to retrieve a handle for the variables that it manages, which is of the form of a pointer to a *tagSQ_VariableVector* structure, and that can be retrieved eg.g., by:
 ```
-int numPredSetVariables;
-SQ_GetNumVariablesInVector(hVariableVector, &numPredSetVariables);
+SQ_VariableVector hPredictionVariables = NULL;
+SQ_GetVariablesForPrediction(hPreparePrediction, &hPredictionVariables);
 ```
 
-We can use the *SQ_GetVariableFromVector* to retrieve a handle for specific variables. For instance to get a handle for the first variable:
+We can get the total number of variables managed by this handle by:
+```
+int numPredictionVariables;
+SQ_GetNumVariablesInVector(hPredictionVariables, &numPredictionVariables);
+```
+
+We can also use the function *SQ_GetVariableFromVector* to retrieve a handle for a specific variable. This handle will be of the form of a pointer to a *tagSQ_Variable* structure. For instance to get a handle for the first variable:
 ```
 iVar = 1;
 SQ_Variable hVariable = NULL;
 SQ_GetVariableFromVector(hVariables, iVar, &hVariable);
 ```
 
-This allows us to retrieve e.g., the name of the variable by using the *SQ_GetVariableName()* function:
+We can use this handle to retrieve e.g., the name of the variable by using the *SQ_GetVariableName()* function:
 ```
 char szVariableName[100];
 SQ_GetVariableName(hVariable, 1, szVariableName, sizeof(szVariableName));
 ```
 
-The next step will be to populate the *SQ_PreparePrediction* structure pointer with the data from which we will predict a desired quantity. Let's imagine that we have the input data in the form of a std::vector<float>, let's name it *fQuantitativeData*, with a size equal to that of the number of variables needed for prediction, containing the variable values for just one observation, also in the same order than that for the observations used to build the model. In this case, we could populate the *SQ_PreparePrediction* structure pointer by:
+The next step will be to populate the *SQ_PreparePrediction* structure pointer with the data from which we will predict a desired quantity. Let's first focus on the simplest case. In this case, the variables managed by the *SQ_PreparePrediction* handle will be only those strictely needed for making a prediction. It is important to note that this will not be always the case as discussed below. Moreover, the input data will be in the form of an array-like structure, let's say a std::vector<float> named *fQuantitativeData* for this example, with a size equal to that of the number of variables needed by the PreparePrediction handle and in the same order. Finally, the input data structure will only contain the variable values for just one observation (it is possible to make predictions for several observations within the same call to SIMCA-Q. In this simple case, we could populate the *SQ_PreparePrediction* handle by:
 
 ```
-iObs = 1;
+iObs = 1; // we are just dealing with one observation
 for (int iVar = 1; iVar <= numPredSetVariables; ++iVar){
   SQ_SetQuantitativeData(hPreparePrediction, iObs, iVar, fQuantitativeData[iVar-1]);
 }
 ```
 
-We could actually populate this handle with variable values from many predictions, we would just need to e.g., have the input vector in a 2D vector and iterate as well over the number of observations.
+As mentioned, we could populate this handle with variable values from many predictions. We would just need to e.g., have the input vector in a 2D vector and iterate as well over the number of observations.
 
 However, in many cases this will be a buggy approach. For prediction, SIMCA-Q requires only the data of the variables used for building the model, but it *requires that they are provided in the correct order*. And the order is that of the dataset used to build the model. It is not uncommon that datasets include Y variables before the X variables, and even that not all X variables are used to build the model. Even if this is not explicit, it can happen e.g., when the derivates of the data are used instead of the original data. While SIMCA-Q will automatically apply the same preprocessing to the data that was used to build the model, derivating leaves out of the model building the first and last variables.
 
