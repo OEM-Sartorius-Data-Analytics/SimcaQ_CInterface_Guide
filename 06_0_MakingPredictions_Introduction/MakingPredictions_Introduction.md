@@ -48,17 +48,19 @@ for (int iVar = 1; iVar <= numPredSetVariables; ++iVar){
 
 As mentioned, we could populate this handle with variable values from many predictions. We would just need to e.g., have the input vector in a 2D vector and iterate as well over the number of observations.
 
-However, in many cases this will be a buggy approach. For prediction, SIMCA-Q requires only the data of the variables used for building the model, but it *requires that they are provided in the correct order*. And the order is that of the dataset used to build the model. It is not uncommon that datasets include Y variables before the X variables, and even that not all X variables are used to build the model. Even if this is not explicit, it can happen e.g., when the derivates of the data are used instead of the original data. While SIMCA-Q will automatically apply the same preprocessing to the data that was used to build the model, derivating leaves out of the model building the first and last variables.
+However, in many cases this will be a buggy approach. For prediction, SIMCA-Q requires only the data of the X variables used for building the model. Moreover, SIMCA-Q requires that these values are provided in the correct order i.e., same order as the variables follow in the corresponding workset for the relevant SIMCA model. But it is not uncommon that a *SQ_PreparePrediction* handle will manage more variable that those strictly needed for making predictions. And also that the position of the variables needed for prediction within the whole set managed by *SQ_PreparePrediction* is unknown a priori.
 
-If you know in advance the structure of your dataset, you can hardcode the script in order to place the input data in the correct positions. Just adjust the iVar variable in the above code accordingly. Actually, this would be the only option if you data file i.e., the file containing the data used for prediction, does not include the names of the variables these data corresponds to, or if these names do not coincide with those of the dataset used to build the model.
+If you know in advance the structure of your worksetset, you can hard-code the script in order to place the input data in the correct positions when using *SQ_SetQuantitativeData()* (or e.g., *SQ_SetQualitativeData()* in case your model requires qualitative data). Just adjust the *iVar* variable in the above code accordingly. Actually, this would be the only option if you data file i.e., the file containing the data used for prediction, does not include the names of the variables these data corresponds to, or if these names do not coincide with those of the dataset used to build the model.
 
-However, we propose here a workaround if your input file contains the variable names, and they coincide with those used by the dataset used to build the model. Basically, you can create a dictionary with the names of the variables used to build the models as keys, and the position of these variables, which as shown above can be obtained from *SQ_Variables* handles. We could get this dictionary, let's name it *DataLookup*, as follows:
+In case your input file contains the variable names along witht the variable values, and that these names coincide with those used for variables in the SIMCA model, one can think in workarouds to make the code more robust.
+
+One of this workarounds will consist in creating a dictionary/map with the names of the variables used to build the models as keys, and the position of these variables within the model workset as values, which as shown above can be obtained from *SQ_Variables* handles. We could get this dictionary, let's name it *DataLookup*, as follows:
 ```
 std::map<std::string, int> DataLookup;
 for(int iVar=1;iVar<=numPredSetVariables;iVar++){
-  SQ_GetVariableFromVector(hVariables, iVar, &hVariable);
+  SQ_GetVariableFromVector(hVariableVector, iVar, &hVariable);
   SQ_GetVariableName (hVariable, 1, szVariableName, sizeof(szVariableName));
-  DataLookup[szName] = iVar;
+  DataLookup[szVariableName] = iVar;
 }
 ```
 
