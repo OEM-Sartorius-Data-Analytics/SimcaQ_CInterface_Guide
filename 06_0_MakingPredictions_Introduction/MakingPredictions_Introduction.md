@@ -2,9 +2,21 @@
 
 One of the main uses of SIMCA-Q is to make predictions from new data based on a SIMCA model.
 
-To illustrate how predictions work in SIMCA-Q, we will start from a point where we will assume that handles for a SIMCA project and for the model within that project that will be used to make predictions, let's name them *hProject* and *hModel*, have already been created.
+In SIMCA-Q, predictions are inferred by retrieving a sequence of handles (pointers to structures). This typically consists in:
 
-## Prepare Prediction Handles
+1. A handle for all the preparations needed before making the actual prediction.
+2. A handle for the general predictions from a specific model.
+3. A handle for the specific quantity to be predicted e.g. predictive components, Y variables, etc.
+4. A handle for the matrix of predicted values. From this matirx handle it is then possible to retrieve actual predicted values.
+
+To illustrate how predictions work in SIMCA-Q, we will start from a point where we will assume that handles for a SIMCA project and for the model within that project that will be used to make predictions, let's name them *hProject* and *hModel*, have already been created. From this point, we will go through the following steps:
+
+* Prepare predictions.
+* Make predictions.
+- Predictive components.
+- Y variables.
+
+## Prepare Predictions
 
 From this point, the first step to make a prediction consist in creating a pointer to a *tagSQ_PreparePrediction* structure that we will use for all preparatory steps of the prediction process:
 ```
@@ -125,13 +137,13 @@ SQ_GetDataFromFloatMatrix(hScoresMatrix, iObs, iComp, &fScoreValue);
 
 ### Predicted values of Y variables
 
-To retrieve the predicted values of Y variables we can use the function *SQ_GetYPredPS()*. This function receives as input parameters:
+In the same way we could access the predicted Y values inn PLS or OPLS models. For this, we can use the function *SQ_GetYPredPS()*. This function receives as input parameters:
 - The handle for the predictions.
 - The number of the component in the model we want the results from. For an OPLS model, the last predictive component is the only valid one.
 - A *SQ_UnscaledState* handle, *True* if the function will return the y-values in the (unscaled) metric of the dataset. If *False*, the returned y-values will be in the scaled and centered metric of the workset.
 - A *SQ_BacktransformedState* handle, *True* if the function will return the y-values in the unscaled untransformed metric of the workset. If *False* the returned y-values will be transformed in the same way as the workset.
-- The address of a *SQ_IntVector* handle accounting for a list with the indices of Y columns to use. If *NULL* all columns in the model will be used.
-- The address of a *SQ_VectorData* structure pointer that will be used to handle the predicted Y values.
+- The address of a *SQ_IntVector* structure pointer to handle the indices of Y variables/columns to predict. If we set it to *NULL*, we will predict all variables/columns in the model.
+- The address of a *SQ_VectorData* structure pointer that will be used to handle the actual predicted Y values.
 
 For instance, if we want to retrieve a predicted unscaled untransformed Y value using all predicting components and Y columns:
 
