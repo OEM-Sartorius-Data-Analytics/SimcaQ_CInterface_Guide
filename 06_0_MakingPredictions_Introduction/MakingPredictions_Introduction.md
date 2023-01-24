@@ -178,4 +178,7 @@ In this [link](https://github.com/OEM-Sartorius-Data-Analytics/SimcaQ_CInterface
 
 The script will print in the terminal the values of all predicted predictive components and Y variables.
 
-The script also contains a simple function named *ReadInputFile()* tailored to read input data files like the one provided in this repothat takes as input parameters 1) the name of an input file with the names and values of X variabled needed to make the predictions
+The script also contains a simple function named *ReadInputFile()* tailored to read input data files like the [one provided in this repo](https://github.com/OEM-Sartorius-Data-Analytics/SimcaQ_CInterface_Guide/blob/main/06_0_MakingPredictions_Introduction/sampleSpectrum.csv). This data file contains variable names and values for a NIR spectrum of a sample of beer like the ones used to build the models within the SIMCA project included also in this repository,
+
+Data files like this one could
+that takes as input parameters 1) the name of an input file with the names and values of X variabled needed to make the predictions
