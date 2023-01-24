@@ -11,12 +11,12 @@ In SIMCA-Q, predictions are inferred by retrieving a sequence of handles (pointe
 
 To illustrate how predictions work in SIMCA-Q, we will start from a point where we will assume that handles for a SIMCA project and for the model within that project that will be used to make predictions, let's name them *hProject* and *hModel*, have already been created. From this point, we will go through the following steps:
 
-- [Prepare Predictions](#PreparePredictions).
+- [Prepare Predictions](#prepare-predictions).
 - [Make Predictions](#make-predictions).
-    - [Predictive Components](#PredictiveComponents).
-    - [Y Variables](#YVariables).
+    - [Predictive Components](#predictive-components).
+    - [Y Variables](#y-variables).
 
-## <a name="PreparePredictions">Prepare Predictions</a>
+## <a name="prepare-predictions">Prepare Predictions</a>
 
 The first step to make a prediction consist in creating a pointer to a *tagSQ_PreparePrediction* structure that we will use for all preparatory steps of the prediction process:
 ```
@@ -99,7 +99,7 @@ SQ_GetPrediction(hPreparePrediction, &hPredictionHandle);
 
 At this stage we can access all possible predicted quantities using the fuctions declared in *SQPrediction.h*.
 
-### <a name="PredictiveComponents">Predictive Components</a>
+### <a name="predictive-components">Predictive Components</a>
 
 To obtain scores for predictive components, we will first need to retrieve a handle for them. For this we need to use the *SQ_GetTPS()* function. This function receives as input arguments:
 - The *SQ_PreparePrediction* handle.
@@ -135,7 +135,7 @@ int iComp = 1;
 SQ_GetDataFromFloatMatrix(hScoresMatrix, iObs, iComp, &fScoreValue);
 ```
 
-### <a name="YVariables">Y variables</a>
+### <a name="y-variables">Y variables</a>
 
 In the same way we could access the predicted Y values inn PLS or OPLS models. For this, we can use the function *SQ_GetYPredPS()*. This function receives as input parameters:
 - The handle for the predictions.
