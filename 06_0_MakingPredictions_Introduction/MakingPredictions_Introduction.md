@@ -11,8 +11,8 @@ In SIMCA-Q, predictions are inferred by retrieving a sequence of handles (pointe
 
 To illustrate how predictions work in SIMCA-Q, we will start from a point where we will assume that handles for a SIMCA project and for the model within that project that will be used to make predictions, let's name them *hProject* and *hModel*, have already been created. From this point, we will go through the following steps:
 
-* [Prepare Predictions](#PreparePredictions).
-* [Make Predictions](#Predictions).
+- [Prepare Predictions](#PreparePredictions).
+- [Make Predictions](#Predictions).
     - [Predictive Components](#PredictiveComponents).
     - [Y Variables](#YVariables).
 
