@@ -2,14 +2,14 @@
 
 *SQ_Model* handles allow retrieving multiple properties and parameters of the models included in SIMCA project/files. Here we will go through the following examples that will show how to work with:
 
-- [Summary of Fit Parameters](#Summary).
+- [Summary of Fit Parameters](#summary-of-fit-parameters).
 - [Scores](#Scores).
 - [Loadings](#Loadings).
 - [Contributions](#Contributions).
 
 For these examples we will assume that a [model has already been loaded onto a *SQ_Model* handle](../05_0_HandlingModels_Introduction/HandlingModels_Introduction.md), let's name it *hModel*.
 
-## <a name="Summary">Summary of Fit Parameters</a>
+## <a name="summary-of-fit-parameters">Summary of Fit Parameters</a>
 
 *SQ_Model* handles can be used to e.g., retrieve parameters that summarize the quality of the fit like R2(cum) and Q2(cum).
 
