@@ -89,33 +89,33 @@ At this stage we can access all possible predicted quantities using the fuctions
 
 ### Predictive Scores
 
-To obtain predictive scores, we will first need to retrieve a handle for them. For this we need to use the *SQ_GetTPS()* function. This function receives as input arguments:
-- The handle for the predictions.
-- The address of a *SQ_intVector* handle accounting for the components to be used in the prediction, or NULL/nullptr if you want to use all components.
+To obtain scores for predictive components, we will first need to retrieve a handle for them. For this we need to use the *SQ_GetTPS()* function. This function receives as input arguments:
+- The *SQ_PreparePrediction* handle.
+- The address of a *SQ_IntVector* structure pointer that will act as a handle for the components that will be predicted. However, you can set it to NULL/nullptr if you want to predict scores for all components.
 - The address of a *SQ_VectorData* structure pointer that will be used to handle the scores.
 
-For instance, if we want to use all components:
+For instance, if we want to predict scores for all components:
 ```
-SQ_VectorData hScoresHandle = NULL;
-SQ_GetTPS(hPredictionHandle, NULL, &hScoresHandle);
-```
-
-If for instance we will like to use only the first component:
-```
-SQ_Prediction hPredictionHandle = NULL;
-SQ_IntVector m_vector = NULL;
-SQ_InitIntVector(&m_vector, iSize);
-SQ_SetDataInIntVector(m_vector, 1, 1);
-SQ_GetTPS(hPredictionHandle, &m_vector, &hScoresHandle);
+SQ_VectorData hPredictiveComponents = NULL;
+SQ_GetTPS(hPredictionHandle, NULL, &hPredictiveComponents);
 ```
 
-And to get a handle for the actual values for the predicted scores:
+If for instance we would like to predict the score only the first component:
+```
+int iSize = 1; // Number of predictive components
+SQ_IntVector hIntVector = NULL;
+SQ_InitIntVector(&hIntVector, iSize);
+SQ_SetDataInIntVector(hIntVector, 1, 1);
+SQ_GetTPS(hPredictionHandle, &hIntVector, &hPredictiveComponents);
+```
+
+Next, we need to retrieve a handle for the matrix of the scores to be predicted:
 ```
 SQ_FloatMatrix hScoresMatrix = NULL;
-SQ_GetDataMatrix(hScoresHandle, &hScoresMatrix);
+SQ_GetDataMatrix(hPredictiveComponents, &hScoresMatrix);
 ```
 
-Finally, we can retrieve the score using the *SQ_GetDataFromFloatMatrix()* function, which receives as input parameters the handle for the scores, the observation index, the component index and the address of the retrieved float value. For instance, to retrieve the score value of the first predicted observation and first component:
+Finally, we can retrieve the score values using the *SQ_GetDataFromFloatMatrix()* function, which receives as input parameters 1) the handle for the matrix of the scores to be predicted, 2) the observation index, 3) the component index and 4) the address of the retrieved float value (i.e., the score value). For instance, to retrieve the score value of the first predicted observation and first predictive component:
 ```
 float fScoreValue;
 int iObs = 1;
@@ -125,7 +125,7 @@ SQ_GetDataFromFloatMatrix(hScoresMatrix, iObs, iComp, &fScoreValue);
 
 ### Predicted values of Y variables
 
-To retrieve the predicted values of Y variables we can use the *SQ_GetYPredPS()*. This function receives as input parameters:
+To retrieve the predicted values of Y variables we can use the function *SQ_GetYPredPS()*. This function receives as input parameters:
 - The handle for the predictions.
 - The number of the component in the model we want the results from. For an OPLS model, the last predictive component is the only valid one.
 - A *SQ_UnscaledState* handle, *True* if the function will return the y-values in the (unscaled) metric of the dataset. If *False*, the returned y-values will be in the scaled and centered metric of the workset.
