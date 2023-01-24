@@ -13,8 +13,8 @@ To illustrate how predictions work in SIMCA-Q, we will start from a point where 
 
 * Prepare predictions.
 * Make predictions.
-- Predictive components.
-- Y variables.
+    - Predictive components.
+    - Y variables.
 
 ## Prepare Predictions
 
