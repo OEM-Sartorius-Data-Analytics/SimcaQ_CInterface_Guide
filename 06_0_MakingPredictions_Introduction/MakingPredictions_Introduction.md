@@ -12,7 +12,7 @@ In SIMCA-Q, predictions are inferred by retrieving a sequence of handles (pointe
 To illustrate how predictions work in SIMCA-Q, we will start from a point where we will assume that handles for a SIMCA project and for the model within that project that will be used to make predictions, let's name them *hProject* and *hModel*, have already been created. From this point, we will go through the following steps:
 
 - [Prepare Predictions](#PreparePredictions).
-- [Make Predictions](#Predictions).
+- [Make Predictions](#make-predictions).
     - [Predictive Components](#PredictiveComponents).
     - [Y Variables](#YVariables).
 
@@ -89,7 +89,7 @@ for (auto const& [key, val] : DataLookup){
 }
 ```
 
-## <a name="Predictions">Make Predictions</a>
+## <a name="make-predictions">Make Predictions</a>
 
 Once we have feed the *SQ_PreparePrediction* handle with the correct data and in the correct order, we can create a *SQ_Prediction* handle that will allow us to handle predicted quantities:
 ```
