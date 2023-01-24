@@ -139,19 +139,31 @@ SQ_GetDataFromFloatMatrix(hScoresMatrix, iObs, iComp, &fScoreValue);
 
 In the same way we could access the predicted Y values inn PLS or OPLS models. For this, we can use the function *SQ_GetYPredPS()*. This function receives as input parameters:
 - The handle for the predictions.
-- The number of the component in the model we want the results from. For an OPLS model, the last predictive component is the only valid one.
+- The number of model components we want the results from. For an OPLS model, the last predictive component is the only valid one.
 - A *SQ_UnscaledState* handle, *True* if the function will return the y-values in the (unscaled) metric of the dataset. If *False*, the returned y-values will be in the scaled and centered metric of the workset.
 - A *SQ_BacktransformedState* handle, *True* if the function will return the y-values in the unscaled untransformed metric of the workset. If *False* the returned y-values will be transformed in the same way as the workset.
 - The address of a *SQ_IntVector* structure pointer to handle the indices of Y variables/columns to predict. If we set it to *NULL*, we will predict all variables/columns in the model.
 - The address of a *SQ_VectorData* structure pointer that will be used to handle the actual predicted Y values.
 
-For instance, if we want to retrieve a predicted unscaled untransformed Y value using all predicting components and Y columns:
+For instance, if we want to retrieve predicted unscaled untransformed values for all Y variables using all predictive components the first step would consist in retrieving a *tagSQ_VectorData* handle for these predicted quantitites:
 
 ```
-int numPredictiveScores;
-SQ_GetNumberOfPredictiveComponents(hModel, &numPredictiveScores);
-
+int numPredictiveComponents;
+SQ_GetNumberOfPredictiveComponents(hModel, &numPredictiveComponents);
 SQ_VectorData hPredictedYs;
+SQ_GetYPredPS(hPredictionHandle, numPredictiveComponents, SQ_Unscaled_True, SQ_Backtransformed_True, NULL, &hPredictedYs);
+```
 
-SQ_GetYPredPS(hPredictionHandle, numPredictiveScores, SQ_Unscaled_True, SQ_Backtransformed_True, NULL, &hPredictedYs);
+As in the previous case, we need to retrieve a handle for the matrix of the predicted Y values:
+```
+SQ_FloatMatrix hYMatrix = NULL;
+SQ_GetDataMatrix(hPredictedYs, &hYMatrix);
+```
+
+Now we are finally ready to retrieve the actual predicted Y values. For instance, we can retrieve the value of the first Y variable of the model and the first observation within the new set of data for prediction by:
+```
+float fYValue;
+int iObs = 1;
+int iYVar = 1;
+SQ_GetDataFromFloatMatrix(hYMatrix, iObs, iComp, &fYValue);
 ```
