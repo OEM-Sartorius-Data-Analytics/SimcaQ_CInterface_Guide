@@ -9,6 +9,10 @@
 #include <sstream>
 #include "SIMCAQP.h"
 
+////////////////////////////////////////////////////////////////////////
+////////////// FUNCTION FOR READING INPUT DATA
+//////////////////////////////////////////////////////////////////////////
+
 void ReadInputFile(std::string fileName, std::vector<std::string>& inputVariables, std::vector<float>& fQuantitativeData)
 {
   std::ifstream file;
@@ -38,32 +42,25 @@ void ReadInputFile(std::string fileName, std::vector<std::string>& inputVariable
   }
 }
 
-void PrintToFile(std::string fileName, float yValue)
-{
-  std::ofstream file (fileName);
-  if (file.is_open())
-  {
-    file << yValue << "\n";
-    file.close();
-  }
-}
-
+////////////////////////////////////////////////////////////////////////
+////////////// MAIN FUNCTION
+//////////////////////////////////////////////////////////////////////////
 
 int main(int argc,char* argv[])
 {
-  if(argc!=5)
+  // Check that all input parameters have been passed
+  if(argc!=4)
     {
-      std::cout<<"\nYou need to pass 1) a SIMCA file, 2) a model name, 3) the name of an iput file and 4) the name of an output file as arguments\n";
+      std::cout<<"\nYou need to pass 1) a SIMCA file, 2) a model name and 3) the name of an input file\n";
       return -1;
     }
   
   SQ_ErrorCode eError; // handler for SIMCA-Q errors
   char szError[256]; // C-string for handling SIMCA-Q error descriptions
-
   char szBuffer[256]; // general C-string handle
 
   ////////////////////////////////////////////////////////////////////////
-  //////////// LOADING PROJECT
+  //////////// LOAD PROJECT
   ////////////////////////////////////////////////////////////////////////
 
   SQ_Project hProject = NULL;
@@ -78,7 +75,7 @@ int main(int argc,char* argv[])
     }
   
   ////////////////////////////////////////////////////////////////////////
-  //////////// LOADING MODEL
+  //////////// LOAD MODEL
   ////////////////////////////////////////////////////////////////////////
 
   // Get number of models
@@ -101,38 +98,43 @@ int main(int argc,char* argv[])
   SQ_Bool bIsFitted;
   if (SQ_IsModelFitted(hModel, &bIsFitted) != SQ_E_OK || bIsFitted != SQ_True)
     return -1;
-
   
   ////////////////////////////////////////////////////////////////////////
-  //////////// ACCESSING PREDICTION VARIABLES
+  //////////// PREPARE PREDICTION
   ////////////////////////////////////////////////////////////////////////
 
   SQ_PreparePrediction hPreparePrediction = NULL;
   SQ_GetPreparePrediction(hModel, &hPreparePrediction);
   
+  ////////////////////////////////////////////////////////////////////////
+  //////////// RETRIEVE HANDLE FOR PREDICTION VARIABLES
+  ////////////////////////////////////////////////////////////////////////
+
   SQ_VariableVector hPredictionVariables = NULL;
   SQ_GetVariablesForPrediction(hPreparePrediction, &hPredictionVariables);
 
   int numPredSetVariables;
   SQ_GetNumVariablesInVector(hPredictionVariables, &numPredSetVariables);
   
-  char szVariableName[100];
+  /*char szVariableName[100];
   std::vector<std::string> vVariableNames;
   SQ_Variable hVariable = NULL;
   for(int iVar=1;iVar<=numPredSetVariables;iVar++){
     SQ_GetVariableFromVector(hPredictionVariables, iVar, &hVariable);
     SQ_GetVariableName (hVariable, 1, szVariableName, sizeof(szVariableName));
     vVariableNames.push_back(szVariableName);
-  }
+    }*/
 
   ////////////////////////////////////////////////////////////////////////
-  //////////// VARIABLE-POSITION DICTIONARY
+  //////////// RETRIEVE VARIABLE-POSITION DICTIONARY
   ////////////////////////////////////////////////////////////////////////
 
+  char szVariableName[100];
   std::map<std::string, int> DataLookup;
+  SQ_Variable hVariable = NULL;
   for(int iVar=1;iVar<=numPredSetVariables;iVar++){
     SQ_GetVariableFromVector(hPredictionVariables, iVar, &hVariable);
-    SQ_GetVariableName (hVariable, 1, szVariableName, sizeof(szVariableName));
+    SQ_GetVariableName(hVariable, 1, szVariableName, sizeof(szVariableName));
     DataLookup[szVariableName] = iVar;
   }
 
@@ -142,13 +144,11 @@ int main(int argc,char* argv[])
 
   std::vector<float> fQuantitativeData;
   std::vector<std::string> inputVariables;
-
-  std::string fileName2 = argv[3];
-  ReadInputFile(fileName2, inputVariables, fQuantitativeData);
-
+  std::string fileName = argv[3];
+  ReadInputFile(fileName, inputVariables, fQuantitativeData);
 
   ////////////////////////////////////////////////////////////////////////
-  //////////// POPULATING SQ_PREPAREPREDICTION WITH INPUT DATA
+  //////////// POPULATE SQ_PREPAREPREDICTION WITH INPUT DATA
   ////////////////////////////////////////////////////////////////////////
 
   for (auto const& [key, val] : DataLookup){
@@ -160,35 +160,68 @@ int main(int argc,char* argv[])
   }
   
   ////////////////////////////////////////////////////////////////////////
-  //////////// GET THE PREDICTION
+  //////////// RETRIEVE PREDICTION HANDLE
   ////////////////////////////////////////////////////////////////////////  
 
-  // Retrieve prediction handle
   SQ_Prediction hPredictionHandle = NULL;
   SQ_GetPrediction(hPreparePrediction, &hPredictionHandle);
 
-  float fYValue;
-  int iObs = 1;
-  int iComp = 1;
+  ////////////////////////////////////////////////////////////////////////
+  //////////// RETRIEVE SCORES FOR ALL PREDICTIVE COMPONENTS
+  ////////////////////////////////////////////////////////////////////////  
+
+
+  ////////////////////////////////////////////////////////////////////////
+  //////////// RETRIEVE ALL PREDICTED Y QUANTITIES
+  ////////////////////////////////////////////////////////////////////////  
 
   int numPredictiveScores;
   SQ_GetNumberOfPredictiveComponents(hModel, &numPredictiveScores);
 
   SQ_VectorData hPredictedYs = NULL;
-
   SQ_GetYPredPS(hPredictionHandle, numPredictiveScores, SQ_Unscaled_True, SQ_Backtransformed_True, NULL, &hPredictedYs);
 
-  SQ_FloatMatrix hYMatrix = NULL;
-  SQ_GetDataMatrix(hPredictedYs, &hYMatrix);
+  // Retrieve observations
+  SQ_StringVector hObservationNames;
+  SQ_GetRowNames(hPredictedYs, &hObservationNames);
+  int numObservations;
+  SQ_GetNumStringsInVector(hObservationNames, &numObservations);
+  std::cout << "Number of observations: " << numObservations << std::endl;
+  for(int i=1;i<=numObservations;i++){
+    SQ_GetStringFromVector(hObservationNames, i, szBuffer, sizeof(szBuffer));
+    std::cout << "Name of observation #" << i << ": " << szBuffer << std::endl;
+  }
 
-  SQ_GetDataFromFloatMatrix(hYMatrix, iObs, iComp, &fYValue);
+  // Retrieve Y variables
+  SQ_StringVector hYVariableNames;
+  SQ_GetColumnNames(hPredictedYs, &hYVariableNames);
+  int numYVariables;
+  SQ_GetNumStringsInVector(hYVariableNames, &numYVariables);
+  std::cout << "Number of Y variables: " << numYVariables << std::endl;
+  for(int i=1;i<=numYVariables;i++){
+    SQ_GetStringFromVector(hYVariableNames, i, szBuffer, sizeof(szBuffer));
+    std::cout << "Name of Y variable #" << i << ": " << szBuffer << std::endl;
+  }
 
+  SQ_FloatMatrix hPredictedYsMatrix = NULL;
+  SQ_GetDataMatrix(hPredictedYs, &hPredictedYsMatrix);
 
+  // Print predicted Y values
+  float fYValue;
   std::cout << "------------------------" << std::endl;
-  std::cout << "predicted y: " << fYValue << std::endl;
+  std::cout << "---Predicted Y Values---" << std::endl;
+  for(int iObs=1; iObs<=numObservations;iObs++){
+    for(int iYVar=1;iYVar<=numYVariables;iYVar++){
+      SQ_GetDataFromFloatMatrix(hPredictedYsMatrix, iObs, iYVar, &fYValue);
+      SQ_GetStringFromVector(hYVariableNames, iYVar, szBuffer, sizeof(szBuffer));
+      std::cout << szBuffer << " for observation #" << iObs << ": " << fYValue << std::endl;
+    }    
+  }
+  
 
-  std::string fileName = argv[4]; // output file
-  PrintToFile(fileName, fYValue);
+
+  
+  
 
   ////////////////////////////////////////////////////////////////////////
   //////////// CLEAR HANDLES
@@ -200,14 +233,13 @@ int main(int argc,char* argv[])
   hPredictionHandle = NULL;
   SQ_ClearVectorData (&hPredictedYs);
   hPredictedYs = NULL;
-  SQ_ClearFloatMatrix(&hYMatrix);
-  hYMatrix = NULL;
+  SQ_ClearFloatMatrix(&hPredictedYsMatrix);
+  hPredictedYsMatrix = NULL;
 
   ////////////////////////////////////////////////////////////////////////
-  //////////// CLOSE THE MODEL AND PROJECT
+  //////////// CLOSE MODEL AND PROJECT
   ////////////////////////////////////////////////////////////////////////
 
-  // Close the project
   eError = SQ_CloseProject(&hProject);
   hProject = NULL;
 

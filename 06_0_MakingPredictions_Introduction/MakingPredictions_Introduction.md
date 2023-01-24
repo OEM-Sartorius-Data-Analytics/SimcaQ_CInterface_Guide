@@ -16,6 +16,8 @@ To illustrate how predictions work in SIMCA-Q, we will start from a point where 
     - [Predictive Components](#predictive-components).
     - [Y Variables](#y-variables).
 
+The repo also contains a full [example script](#example-script) where all these concepts are implemented
+
 ## <a name="prepare-predictions">Prepare Predictions</a>
 
 The first step to make a prediction consist in creating a pointer to a *tagSQ_PreparePrediction* structure that we will use for all preparatory steps of the prediction process:
@@ -137,7 +139,7 @@ SQ_GetDataFromFloatMatrix(hScoresMatrix, iObs, iComp, &fScoreValue);
 
 ### <a name="y-variables">Y variables</a>
 
-In the same way we could access the predicted Y values inn PLS or OPLS models. For this, we can use the function *SQ_GetYPredPS()*. This function receives as input parameters:
+In the same way we could access the predicted Y values in PLS or OPLS models. For this, we can use the function *SQ_GetYPredPS()*. This function receives as input parameters:
 - The handle for the predictions.
 - The number of model components we want the results from. For an OPLS model, the last predictive component is the only valid one.
 - A *SQ_UnscaledState* handle, *True* if the function will return the y-values in the (unscaled) metric of the dataset. If *False*, the returned y-values will be in the scaled and centered metric of the workset.
@@ -178,7 +180,4 @@ In this [link](https://github.com/OEM-Sartorius-Data-Analytics/SimcaQ_CInterface
 
 The script will print in the terminal the values of all predicted predictive components and Y variables.
 
-The script also contains a simple function named *ReadInputFile()* tailored to read input data files like the [one provided in this repo](https://github.com/OEM-Sartorius-Data-Analytics/SimcaQ_CInterface_Guide/blob/main/06_0_MakingPredictions_Introduction/sampleSpectrum.csv). This data file contains variable names and values for a NIR spectrum of a sample of beer like the ones used to build the models within the [SIMCA project included also in this repository](https://github.com/OEM-Sartorius-Data-Analytics/SimcaQ_CInterface_Guide/blob/main/06_0_MakingPredictions_Introduction/BEER_NIR_alcohol_predictors.usp), which basically predict the alcohol content of the sample beers.
-
-Data files like this one could
-that takes as input parameters 1) the name of an input file with the names and values of X variabled needed to make the predictions
+The script contains a simple function named *ReadInputFile()* tailored to read input data files like the [one provided in this repo](https://github.com/OEM-Sartorius-Data-Analytics/SimcaQ_CInterface_Guide/blob/main/06_0_MakingPredictions_Introduction/sampleSpectrum.csv). This data file contains variable names and values for a NIR spectrum of a sample of beer like the ones used to build the models within the [SIMCA project included also in this repository](https://github.com/OEM-Sartorius-Data-Analytics/SimcaQ_CInterface_Guide/blob/main/06_0_MakingPredictions_Introduction/BEER_NIR_alcohol_predictors.usp), which basically predict the alcohol content of the sample beers. For different projects, models or format of the input data you would need to rewrite the *ReadInputFile()* function accordingly.
