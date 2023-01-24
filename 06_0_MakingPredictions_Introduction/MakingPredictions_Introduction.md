@@ -167,3 +167,15 @@ int iObs = 1;
 int iYVar = 1;
 SQ_GetDataFromFloatMatrix(hYMatrix, iObs, iComp, &fYValue);
 ```
+
+## Example Script
+
+In this [link](https://github.com/OEM-Sartorius-Data-Analytics/SimcaQ_CInterface_Guide/blob/main/06_0_MakingPredictions_Introduction/MakingPredictions_Introduction.cpp) you can find an example where all this is combined into a stand alone console script. The script will take as input parameters:
+
+1. The name of a SIMCA project that will be loaded.
+2. The name of a model within that SIMCA project.
+3. The name of a file with data to make predictions
+
+The script will print in the terminal the values of all predicted predictive components and Y variables.
+
+The script also contains a simple function named *ReadInputFile()* tailored to read input data files like the one provided in this repothat takes as input parameters 1) the name of an input file with the names and values of X variabled needed to make the predictions
