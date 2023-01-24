@@ -216,12 +216,7 @@ int main(int argc,char* argv[])
       SQ_GetStringFromVector(hYVariableNames, iYVar, szBuffer, sizeof(szBuffer));
       std::cout << szBuffer << " for observation #" << iObs << ": " << fYValue << std::endl;
     }    
-  }
-  
-
-
-  
-  
+  }  
 
   ////////////////////////////////////////////////////////////////////////
   //////////// CLEAR HANDLES
