@@ -34,15 +34,15 @@ SQ_GetVariablesForPrediction(hPreparePrediction, &hPredictionVariables);
 
 We can get the total number of variables managed by this handle by:
 ```
-int numPredictionVariables;
-SQ_GetNumVariablesInVector(hPredictionVariables, &numPredictionVariables);
+int numPredSetVariables;
+SQ_GetNumVariablesInVector(hPredictionVariables, &numPredSetVariables);
 ```
 
 We can also use the function *SQ_GetVariableFromVector* to retrieve a handle for a specific variable. This handle will be of the form of a pointer to a *tagSQ_Variable* structure. For instance to get a handle for the first variable:
 ```
 iVar = 1;
 SQ_Variable hVariable = NULL;
-SQ_GetVariableFromVector(hVariables, iVar, &hVariable);
+SQ_GetVariableFromVector(hPredictionVariables, iVar, &hVariable);
 ```
 
 We can use this handle to retrieve e.g., the name of the variable by using the *SQ_GetVariableName()* function:
@@ -62,25 +62,27 @@ for (int iVar = 1; iVar <= numPredSetVariables; ++iVar){
 
 As mentioned, we could populate this handle with variable values from many predictions. We would just need to e.g., have the input vector in a 2D vector and iterate as well over the number of observations.
 
-However, in many cases this will be a buggy approach. For prediction, SIMCA-Q requires only the data of the X variables used for building the model. Moreover, SIMCA-Q requires that these values are provided in the correct order i.e., same order as the variables follow in the corresponding workset for the relevant SIMCA model. But it is not uncommon that a *SQ_PreparePrediction* handle will manage more variable that those strictly needed for making predictions. And also that the position of the variables needed for prediction within the whole set managed by *SQ_PreparePrediction* is unknown a priori.
+However, in many cases this will be a buggy approach. For prediction, SIMCA-Q requires only the data of the X variables used for building the model. Moreover, SIMCA-Q requires that these values are provided in the correct order i.e., same order as the variables follow in the corresponding workset for the relevant SIMCA model. But it is not uncommon that a *tagSQ_PreparePrediction* handle will manage more variables than those strictly needed for making predictions. It also can happen that the position of the variables needed for prediction within the whole set managed by *SQ_PreparePrediction* is unknown a priori.
 
-If you know in advance the structure of your worksetset, you can hard-code the script in order to place the input data in the correct positions when using *SQ_SetQuantitativeData()* (or e.g., *SQ_SetQualitativeData()* in case your model requires qualitative data). Just adjust the *iVar* variable in the above code accordingly. Actually, this would be the only option if you data file i.e., the file containing the data used for prediction, does not include the names of the variables these data corresponds to, or if these names do not coincide with those of the dataset used to build the model.
+If you know in advance the structure of your workset, you can hard-code the script in order to place the input data in the correct positions when using *SQ_SetQuantitativeData()* (or e.g., *SQ_SetQualitativeData()* in case your model requires qualitative data). Just adjust the *iVar* variable in the above code accordingly. Actually, this would be the only option if you data file i.e., the file containing the data used for prediction, does not include the names of the variables these data corresponds to, or if these names do not coincide with those of the dataset used to build the model.
 
 In case your input file contains the variable names along witht the variable values, and that these names coincide with those used for variables in the SIMCA model, one can think in workarouds to make the code more robust.
 
 One of this workarounds would be as follows:
 
-- The first step would consist in creating a dictionary/map with the names of the variables managed by the *SQ_PreparePrediction* handle as keys, and the position of these variables as values. We could get this dictionary, let's name it *DataLookup*, as follows:
+- The first step would consist in creating a dictionary/map with the names of the variables managed by the *tagSQ_PreparePrediction* handle as keys, and the position of these variables as values. We could create this dictionary, let's name it *DataLookup*, as follows:
 ```
+char szVariableName[100];
 std::map<std::string, int> DataLookup;
+SQ_Variable hVariable = NULL;
 for(int iVar=1;iVar<=numPredSetVariables;iVar++){
   SQ_GetVariableFromVector(hPredictionVariables, iVar, &hVariable);
-  SQ_GetVariableName (hVariable, 1, szVariableName, sizeof(szVariableName));
+  SQ_GetVariableName(hVariable, 1, szVariableName, sizeof(szVariableName));
   DataLookup[szVariableName] = iVar;
 }
 ```
 
-Now suppose that we made functions that read the input data and return the names of the variables within these files as an std::vector\<std::string\> structure (e.g., with the name *inputVariables*), and the values of these variables as a std::vector\<float\> structure (e.g., with the name *fQuantitativeData*). Once the above dictionary is created, we can iterate over it, and then check if the variable name is also present in the std::vector<std::string> structure *inputVariables*. If that is the case, we can populate the correct position of the *SQ_PreparePrediction* handle with the corresponding value of the std::vector<float> structure *fQuantitativeData*:
+Now suppose that we made functions that read the input data and return the names of the variables within these files as an std::vector\<std::string\> structure (e.g., with the name *inputVariables*), and the values of these variables as a std::vector\<float\> structure (e.g., with the name *fQuantitativeData*). Once the above dictionary is created, we can iterate over it, and then check if the variable name is also present in the std::vector<std::string> structure *inputVariables*. If that is the case, we can populate the correct position of the *tagSQ_PreparePrediction* handle with the corresponding value of the std::vector<float> structure *fQuantitativeData*:
 ```
 for (auto const& [key, val] : DataLookup){
   auto res = std::find(inputVariables.begin(), inputVariables.end(), key);
@@ -93,7 +95,7 @@ for (auto const& [key, val] : DataLookup){
 
 ## <a name="make-predictions">Make Predictions</a>
 
-Once we have feed the *SQ_PreparePrediction* handle with the correct data and in the correct order, we can create a *SQ_Prediction* handle that will allow us to handle predicted quantities:
+Once we have feed the *tagSQ_PreparePrediction* handle with the correct data and in the correct order, we can create a *tagSQ_Prediction* handle that will allow us to handle predicted quantities:
 ```
 SQ_Prediction hPredictionHandle = NULL;
 SQ_GetPrediction(hPreparePrediction, &hPredictionHandle);

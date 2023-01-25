@@ -170,10 +170,55 @@ int main(int argc,char* argv[])
   //////////// RETRIEVE SCORES FOR ALL PREDICTIVE COMPONENTS
   ////////////////////////////////////////////////////////////////////////  
 
+  std::cout << "--------------------------------------" << std::endl;
+  std::cout << "--------------------------------------" << std::endl;
+  std::cout << "---Predicting Predictive Components---" << std::endl;
+
+  SQ_VectorData hPredictedPredictiveComponents = NULL;
+  SQ_GetTPS(hPredictionHandle, NULL, &hPredictedPredictiveComponents);
+
+  // Retrieve observations
+  SQ_StringVector hObservationNamesPredComp;
+  SQ_GetRowNames(hPredictedPredictiveComponents, &hObservationNamesPredComp);
+  int numObservationsPredComp;
+  SQ_GetNumStringsInVector(hObservationNamesPredComp, &numObservationsPredComp);
+  std::cout << "Number of observations (Predicting Predictive Components Code Section): " << numObservationsPredComp << std::endl;
+  for(int i=1;i<=numObservationsPredComp;i++){
+    SQ_GetStringFromVector(hObservationNamesPredComp, i, szBuffer, sizeof(szBuffer));
+    std::cout << "Name of observation #" << i << " (Predicting Predictive Components Code Section): " << szBuffer << std::endl;
+  }
+
+  // Retrieve names of predictive components
+  SQ_StringVector hPredictiveComponentNames;
+  SQ_GetColumnNames(hPredictedPredictiveComponents, &hPredictiveComponentNames);
+  int numPredictiveComponents;
+  SQ_GetNumStringsInVector(hPredictiveComponentNames, &numPredictiveComponents);
+  std::cout << "Number of predictive components (Predicting Predictive Components Code Section): " << numPredictiveComponents << std::endl;
+  for(int i=1;i<=numPredictiveComponents;i++){
+    SQ_GetStringFromVector(hPredictiveComponentNames, i, szBuffer, sizeof(szBuffer));
+    std::cout << "Name of predictive component #" << i << " (Predicting Predictive Components Code Section): " << szBuffer << std::endl;
+  }
+
+  SQ_FloatMatrix hPredictedPredictiveComponentsDataMatrix = NULL;
+  SQ_GetDataMatrix(hPredictedPredictiveComponents, &hPredictedPredictiveComponentsDataMatrix);
+
+  // Print predicted component values
+  float fScoreValue;
+  for(int iObsPredComp=1; iObsPredComp<=numObservationsPredComp;iObsPredComp++){
+    for(int iPredComp=1;iPredComp<=numPredictiveComponents;iPredComp++){
+      SQ_GetDataFromFloatMatrix(hPredictedPredictiveComponentsDataMatrix, iObsPredComp, iPredComp, &fScoreValue);
+      SQ_GetStringFromVector(hPredictiveComponentNames, iPredComp, szBuffer, sizeof(szBuffer));
+      std::cout << szBuffer << " for observation #" << iObsPredComp << ": " << fScoreValue << std::endl;
+    }
+  }
 
   ////////////////////////////////////////////////////////////////////////
   //////////// RETRIEVE ALL PREDICTED Y QUANTITIES
   ////////////////////////////////////////////////////////////////////////  
+
+  std::cout << "----------------------------" << std::endl;
+  std::cout << "----------------------------" << std::endl;
+  std::cout << "---Predicting Y Variables---" << std::endl;
 
   int numPredictiveScores;
   SQ_GetNumberOfPredictiveComponents(hModel, &numPredictiveScores);
@@ -186,21 +231,21 @@ int main(int argc,char* argv[])
   SQ_GetRowNames(hPredictedYs, &hObservationNames);
   int numObservations;
   SQ_GetNumStringsInVector(hObservationNames, &numObservations);
-  std::cout << "Number of observations: " << numObservations << std::endl;
+  std::cout << "Number of observations (Predicting Y Values Code Section): " << numObservations << std::endl;
   for(int i=1;i<=numObservations;i++){
     SQ_GetStringFromVector(hObservationNames, i, szBuffer, sizeof(szBuffer));
-    std::cout << "Name of observation #" << i << ": " << szBuffer << std::endl;
+    std::cout << "Name of observation #" << i << " (Predicting Y Values Code Section): " << szBuffer << std::endl;
   }
 
-  // Retrieve Y variables
+  // Retrieve names of Y variables
   SQ_StringVector hYVariableNames;
   SQ_GetColumnNames(hPredictedYs, &hYVariableNames);
   int numYVariables;
   SQ_GetNumStringsInVector(hYVariableNames, &numYVariables);
-  std::cout << "Number of Y variables: " << numYVariables << std::endl;
+  std::cout << "Number of Y variables (Predicting Y Values Code Section): " << numYVariables << std::endl;
   for(int i=1;i<=numYVariables;i++){
     SQ_GetStringFromVector(hYVariableNames, i, szBuffer, sizeof(szBuffer));
-    std::cout << "Name of Y variable #" << i << ": " << szBuffer << std::endl;
+    std::cout << "Name of Y variable #" << i << " (Predicting Y Values Code Section): " << szBuffer << std::endl;
   }
 
   SQ_FloatMatrix hPredictedYsMatrix = NULL;
@@ -208,8 +253,6 @@ int main(int argc,char* argv[])
 
   // Print predicted Y values
   float fYValue;
-  std::cout << "------------------------" << std::endl;
-  std::cout << "---Predicted Y Values---" << std::endl;
   for(int iObs=1; iObs<=numObservations;iObs++){
     for(int iYVar=1;iYVar<=numYVariables;iYVar++){
       SQ_GetDataFromFloatMatrix(hPredictedYsMatrix, iObs, iYVar, &fYValue);
@@ -230,6 +273,13 @@ int main(int argc,char* argv[])
   hPredictedYs = NULL;
   SQ_ClearFloatMatrix(&hPredictedYsMatrix);
   hPredictedYsMatrix = NULL;
+  SQ_ClearStringVector(&hObservationNamesPredComp);
+  hObservationNamesPredComp = NULL;
+  SQ_ClearStringVector(&hPredictiveComponentNames);
+  hPredictiveComponentNames = NULL;
+  SQ_ClearFloatMatrix(&hPredictedPredictiveComponentsDataMatrix);
+  hPredictedPredictiveComponentsDataMatrix = NULL;
+
 
   ////////////////////////////////////////////////////////////////////////
   //////////// CLOSE MODEL AND PROJECT
