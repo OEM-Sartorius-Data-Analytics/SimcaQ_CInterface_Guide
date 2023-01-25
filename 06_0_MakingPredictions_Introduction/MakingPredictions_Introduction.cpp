@@ -206,7 +206,7 @@ int main(int argc,char* argv[])
   SQ_FloatMatrix hPredictedPredictiveComponentsDataMatrix = NULL;
   SQ_GetDataMatrix(hPredictedPredictiveComponents, &hPredictedPredictiveComponentsDataMatrix);
 
-  // Print predicted component values
+  // Print scores for predicted component
   float fScoreValue;
   for(int iObsPredComp=1; iObsPredComp<=numObservationsPredComp;iObsPredComp++){
     for(int iPredComp=1;iPredComp<=numPredictiveComponents;iPredComp++){

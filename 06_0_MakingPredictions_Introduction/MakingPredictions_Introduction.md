@@ -107,36 +107,76 @@ At this stage we can access all possible predicted quantities using the fuctions
 
 To obtain scores for predictive components, we will first need to retrieve a handle for them. For this we need to use the *SQ_GetTPS()* function. This function receives as input arguments:
 - The *SQ_PreparePrediction* handle.
-- The address of a *SQ_IntVector* structure pointer that will act as a handle for the components that will be predicted. However, you can set it to NULL/nullptr if you want to predict scores for all components.
-- The address of a *SQ_VectorData* structure pointer that will be used to handle the scores.
+- The address of a *SQ_IntVector* structure pointer that will act as a handle for the components that will be predicted. However, you can set it to NULL/nullptr if you want to predict scores for all predictive components.
+- The address of a *tagSQ_VectorData* structure pointer that will be used to handle the scores.
 
-For instance, if we want to predict scores for all components:
+For instance, if we want to predict scores for all the predictive components of the model:
 ```
-SQ_VectorData hPredictiveComponents = NULL;
-SQ_GetTPS(hPredictionHandle, NULL, &hPredictiveComponents);
+SQ_VectorData hPredictedPredictiveComponents = NULL;
+SQ_GetTPS(hPredictionHandle, NULL, &hPredictedPredictiveComponents);
 ```
 
-If for instance we would like to predict the score only the first component:
+If for instance we would like to predict the score only the first predictive component:
 ```
-int iSize = 1; // Number of predictive components
+int iSize = 1; // Number of predictive components to be predicted
 SQ_IntVector hIntVector = NULL;
 SQ_InitIntVector(&hIntVector, iSize);
 SQ_SetDataInIntVector(hIntVector, 1, 1);
-SQ_GetTPS(hPredictionHandle, &hIntVector, &hPredictiveComponents);
+SQ_GetTPS(hPredictionHandle, &hIntVector, &hPredictedPredictiveComponents);
 ```
 
-Next, we need to retrieve a handle for the matrix of the scores to be predicted:
+From the *hPredictedPredictiveComponents* handle we could get the number and names of the observations within the dataset from which scores for predictive components are predicted. For instance, the following code block will retrieve this number and names and print them to the console:
 ```
-SQ_FloatMatrix hScoresMatrix = NULL;
-SQ_GetDataMatrix(hPredictiveComponents, &hScoresMatrix);
+SQ_StringVector hObservationNamesPredComp;
+SQ_GetRowNames(hPredictedPredictiveComponents, &hObservationNamesPredComp);
+int numObservationsPredComp;
+SQ_GetNumStringsInVector(hObservationNamesPredComp, &numObservationsPredComp);
+std::cout << "Number of observations: " << numObservationsPredComp << std::endl;
+for(int i=1;i<=numObservationsPredComp;i++){
+  SQ_GetStringFromVector(hObservationNamesPredComp, i, szBuffer, sizeof(szBuffer));
+  std::cout << "Name of observation #" << i << ": " << szBuffer << std::endl;
+}
 ```
 
-Finally, we can retrieve the score values using the *SQ_GetDataFromFloatMatrix()* function, which receives as input parameters 1) the handle for the matrix of the scores to be predicted, 2) the observation index, 3) the component index and 4) the address of the retrieved float value (i.e., the score value). For instance, to retrieve the score value of the first predicted observation and first predictive component:
+In the same way, the *hPredictedPredictiveComponents* handle can be used to retrieve the number and names of the predicted predictive components. As an example, the following code block will retrieve this number and names and print them to the console:
+```
+SQ_StringVector hPredictiveComponentNames;
+SQ_GetColumnNames(hPredictedPredictiveComponents, &hPredictiveComponentNames);
+int numPredictiveComponents;
+SQ_GetNumStringsInVector(hPredictiveComponentNames, &numPredictiveComponents);
+std::cout << "Number of predictive components: " << numPredictiveComponents << std::endl;
+for(int i=1;i<=numPredictiveComponents;i++){
+  SQ_GetStringFromVector(hPredictiveComponentNames, i, szBuffer, sizeof(szBuffer));
+  std::cout << "Name of predictive component #" << i << ": " << szBuffer << std::endl;
+}
+```
+
+The next step in the prediction procedure consists in retrieving a handle for the matrix of the scores to be predicted:
+```
+SQ_FloatMatrix hPredictedPredictiveComponentsDataMatrix = NULL;
+SQ_GetDataMatrix(hPredictedPredictiveComponents, &hPredictedPredictiveComponentsDataMatrix);
+```
+
+Finally, we can retrieve the score values using the *SQ_GetDataFromFloatMatrix()* function, which receives as input parameters 1) the handle for the matrix of the scores to be predicted, 2) the observation index, 3) the component index and 4) the address of the retrieved float value (i.e., the score value).
+
+For instance, to retrieve the score value of the first predicted observation and first predictive component:
 ```
 float fScoreValue;
-int iObs = 1;
-int iComp = 1;
-SQ_GetDataFromFloatMatrix(hScoresMatrix, iObs, iComp, &fScoreValue);
+int iObsPredComp = 1;
+int iPredComp = 1;
+SQ_GetDataFromFloatMatrix(hScoresMatrix, iObsPredComp, iPredComp, &fScoreValue);
+```
+
+As an alternative, the following code block will print to the console the scores for all predicted predictive components and observations:
+```
+float fScoreValue;
+for(int iObsPredComp=1; iObsPredComp<=numObservationsPredComp;iObsPredComp++){
+  for(int iPredComp=1;iPredComp<=numPredictiveComponents;iPredComp++){
+    SQ_GetDataFromFloatMatrix(hPredictedPredictiveComponentsDataMatrix, iObsPredComp, iPredComp, &fScoreValue);
+    SQ_GetStringFromVector(hPredictiveComponentNames, iPredComp, szBuffer, sizeof(szBuffer));
+    std::cout << szBuffer << " for observation #" << iObsPredComp << ": " << fScoreValue << std::endl;
+  }
+}
 ```
 
 ### <a name="y-variables">Y variables</a>
