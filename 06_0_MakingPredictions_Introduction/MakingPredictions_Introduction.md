@@ -181,27 +181,53 @@ for(int iObsPredComp=1; iObsPredComp<=numObservationsPredComp;iObsPredComp++){
 
 ### <a name="y-variables">Y variables</a>
 
-In the same way we could access the predicted Y values in PLS or OPLS models. For this, we can use the function *SQ_GetYPredPS()*. This function receives as input parameters:
+*tagSQ_Prediction* handles also provide access to predicted Y values in PLS or OPLS models. For this, we can use the function *SQ_GetYPredPS()*. This function receives as input parameters:
 - The handle for the predictions.
 - The number of model components we want the results from. For an OPLS model, the last predictive component is the only valid one.
 - A *SQ_UnscaledState* handle, *True* if the function will return the y-values in the (unscaled) metric of the dataset. If *False*, the returned y-values will be in the scaled and centered metric of the workset.
 - A *SQ_BacktransformedState* handle, *True* if the function will return the y-values in the unscaled untransformed metric of the workset. If *False* the returned y-values will be transformed in the same way as the workset.
-- The address of a *SQ_IntVector* structure pointer to handle the indices of Y variables/columns to predict. If we set it to *NULL*, we will predict all variables/columns in the model.
-- The address of a *SQ_VectorData* structure pointer that will be used to handle the actual predicted Y values.
+- The address of a *tagSQ_IntVector* structure pointer to handle the indices of Y variables/columns to predict. If we set it to *NULL*, we will predict all variables/columns in the model.
+- The address of a *tagSQ_VectorData* structure pointer that will be used to handle the actual predicted Y values.
 
-For instance, if we want to retrieve predicted unscaled untransformed values for all Y variables using all predictive components the first step would consist in retrieving a *tagSQ_VectorData* handle for these predicted quantitites:
+For instance, if we want to retrieve predicted unscaled untransformed values for all Y variables using all predictive components the first step would consist in retrieving a *tagSQ_VectorData* handle for these predicted Y quantitites:
 
 ```
-int numPredictiveComponents;
-SQ_GetNumberOfPredictiveComponents(hModel, &numPredictiveComponents);
-SQ_VectorData hPredictedYs;
-SQ_GetYPredPS(hPredictionHandle, numPredictiveComponents, SQ_Unscaled_True, SQ_Backtransformed_True, NULL, &hPredictedYs);
+int numPredictiveScores;
+SQ_GetNumberOfPredictiveComponents(hModel, &numPredictiveScores);
+SQ_VectorData hPredictedYs = NULL;
+SQ_GetYPredPS(hPredictionHandle, numPredictiveScores, SQ_Unscaled_True, SQ_Backtransformed_True, NULL, &hPredictedYs);
 ```
 
-As in the previous case, we need to retrieve a handle for the matrix of the predicted Y values:
+As in the previous case, the retrieved *tagSQ_VectorData* handle *hPredictedYs* allows retrieving the number and names of the observations within the dataset from which Y variables are predicted. For instance, the following code block will retrieve the number and names of these observations and print them to the console:
 ```
-SQ_FloatMatrix hYMatrix = NULL;
-SQ_GetDataMatrix(hPredictedYs, &hYMatrix);
+SQ_StringVector hObservationNames;
+SQ_GetRowNames(hPredictedYs, &hObservationNames);
+int numObservations;
+SQ_GetNumStringsInVector(hObservationNames, &numObservations);
+std::cout << "Number of observations: " << numObservations << std::endl;
+for(int i=1;i<=numObservations;i++){
+  SQ_GetStringFromVector(hObservationNames, i, szBuffer, sizeof(szBuffer));
+  std::cout << "Name of observation #" << i << ": " << szBuffer << std::endl;
+}
+```
+
+Similarly, from the *tagSQ_VectorData* handle *hPredictedYs* we can retrieve the number and names of the predicted Y variables. As an example, the following code block will retrieve the number and names of these Y variables and print them to the console:
+```
+SQ_StringVector hYVariableNames;
+SQ_GetColumnNames(hPredictedYs, &hYVariableNames);
+int numYVariables;
+SQ_GetNumStringsInVector(hYVariableNames, &numYVariables);
+std::cout << "Number of Y variables: " << numYVariables << std::endl;
+for(int i=1;i<=numYVariables;i++){
+  SQ_GetStringFromVector(hYVariableNames, i, szBuffer, sizeof(szBuffer));
+  std::cout << "Name of Y variable #" << i << ": " << szBuffer << std::endl;
+}
+```
+
+To continue with the prediction procedure, we need again to retrieve a handle for the matrix of the predicted Y values:
+```
+SQ_FloatMatrix hPredictedYsMatrix = NULL;
+SQ_GetDataMatrix(hPredictedYs, &hPredictedYsMatrix);
 ```
 
 Now we are finally ready to retrieve the actual predicted Y values. For instance, we can retrieve the value of the first Y variable of the model and the first observation within the new set of data for prediction by:
@@ -210,6 +236,18 @@ float fYValue;
 int iObs = 1;
 int iYVar = 1;
 SQ_GetDataFromFloatMatrix(hYMatrix, iObs, iComp, &fYValue);
+```
+
+If for instance we would like to retrieve values of all Y variables for all observations (and print these values to the console, we could do it by:
+```
+float fYValue;
+for(int iObs=1; iObs<=numObservations;iObs++){
+  for(int iYVar=1;iYVar<=numYVariables;iYVar++){
+    SQ_GetDataFromFloatMatrix(hPredictedYsMatrix, iObs, iYVar, &fYValue);
+    SQ_GetStringFromVector(hYVariableNames, iYVar, szBuffer, sizeof(szBuffer));
+    std::cout << szBuffer << " for observation #" << iObs << ": " << fYValue << std::endl;
+  }    
+}  
 ```
 
 ## Example Script
